@@ -5,6 +5,7 @@
 .artifacts/
 src/PetDream.Web/Bin/
 src/PetDream.Web/obj/
+src/PetDream.Web/Scripts/vendor/
 src/PetDream.Web/ConnectionStrings.config
 src/PetDream.Web/App_Data/*
 !src/PetDream.Web/App_Data/.gitkeep

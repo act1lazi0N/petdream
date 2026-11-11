@@ -10,6 +10,7 @@ Phong cách giao diện hồng/tím pastel, lấy cảm hứng từ mẫu PetDre
 - Lớp cơ sở DAO dùng ADO.NET, cấu hình LocalDB tách riêng theo máy.
 - Script khởi tạo cấu hình, biên dịch và chạy IIS Express.
 - Quy ước mã nguồn, thư mục database và tài liệu kiến trúc.
+- Dependency cố định phiên bản, tự restore qua NuGet và phục vụ JavaScript local.
 
 Chưa có đăng nhập, CRUD, database/schema, dữ liệu thú cưng hoặc đặt hàng. Các trang khung chạy mà không mở kết nối SQL Server.
 
@@ -18,6 +19,7 @@ Chưa có đăng nhập, CRUD, database/schema, dữ liệu thú cưng hoặc đ
 - Windows, .NET Framework 4.8 Developer Pack và IIS Express.
 - Visual Studio với công cụ ASP.NET/.NET Framework nếu mở solution bằng IDE.
 - SQL Server LocalDB cho giai đoạn triển khai dữ liệu; khung giao diện chưa yêu cầu database.
+- Kết nối Internet khi restore lần đầu; các lần sau dùng package cache trong `.artifacts/`.
 
 ## Chạy local
 
@@ -30,6 +32,26 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-Local.ps1
 
 Mở `http://localhost:8088/` hoặc `/Admin/Default.aspx`. Dừng server bằng Ctrl+C.
 Đổi cổng bằng `-Port 8090`. Có thể mở `PetDream.sln` bằng Visual Studio sau khi chạy `scripts\Initialize-Local.ps1`.
+
+## Thư viện
+
+| Thư viện | Phiên bản | Mục đích |
+| --- | --- | --- |
+| [BCrypt.Net-Next](https://www.nuget.org/packages/BCrypt.Net-Next/4.2.0) | 4.2.0 | Băm và xác minh mật khẩu khi triển khai tài khoản |
+| [jQuery](https://www.nuget.org/packages/jQuery/3.7.1) | 3.7.1 | Script mapping cho Web Forms unobtrusive validation, được nạp local qua hai Master Page |
+
+Các dependency bắc cầu của BCrypt được cố định trong `src/PetDream.Web/packages.config`: System.Buffers 4.6.1, System.Memory 4.6.3, System.Numerics.Vectors 4.6.1, System.Runtime.CompilerServices.Unsafe 6.1.2. ADO.NET và các control/validator Web Forms dùng thư viện có sẵn trong .NET Framework.
+
+`Initialize-Local.ps1` (được gọi từ build/start) tự restore. Có thể chạy riêng:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Restore-Dependencies.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Test-Dependencies.ps1
+```
+
+NuGet CLI 6.14.0 được tải từ `dist.nuget.org`, kiểm tra SHA-256 trước khi chạy; package chỉ lấy từ nguồn khai báo trong `NuGet.Config`. Script copy DLL tương thích .NET Framework vào `Bin` và jQuery vào `Scripts/vendor`; không dùng CDN lúc chạy website. Các thư mục này cùng package cache không commit.
+
+Khi đổi phiên bản, cập nhật `packages.config`, asset mapping trong script restore, script mapping trong `Global.asax.cs` nếu đổi jQuery, và binding redirect nếu phiên bản assembly thay đổi. Chạy lại build và kiểm tra dependency. Không dùng `dotnet add package` trực tiếp vì đây là Web Site không có `.csproj`.
 
 ## Cấu hình database
 

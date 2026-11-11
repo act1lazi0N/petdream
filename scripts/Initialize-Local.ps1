@@ -1,4 +1,5 @@
 $ErrorActionPreference = 'Stop'
+& (Join-Path $PSScriptRoot 'Restore-Dependencies.ps1')
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $webRoot = Join-Path $projectRoot 'src\PetDream.Web'
 $localConfig = Join-Path $webRoot 'ConnectionStrings.config'

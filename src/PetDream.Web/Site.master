@@ -11,6 +11,9 @@
 <body>
     <a class="skip-link" href="#noi-dung">Đến nội dung chính</a>
     <form id="form_chinh" runat="server">
+        <asp:ScriptManager ID="script_chinh" runat="server" EnableCdn="false">
+            <Scripts><asp:ScriptReference Name="jquery" /></Scripts>
+        </asp:ScriptManager>
         <header class="site-header">
             <a class="brand" href="<%= ResolveUrl("~/Default.aspx") %>">PetDream<span>Thế giới thú cưng đáng yêu</span></a>
             <nav aria-label="Điều hướng chính">

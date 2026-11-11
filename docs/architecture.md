@@ -10,6 +10,10 @@ Luồng phát triển: trang `.aspx` → code-behind `.aspx.cs` → lớp `DAO_*
 `DAO_CoSo` cung cấp SqlConnection chưa mở; DAO cụ thể phải dùng `using` và SqlParameter có kiểu.
 Khung không phụ thuộc DLL SqlDataAccess/FreeTextBox của bài mẫu.
 
+Dependency ngoài được cố định trong `packages.config`: BCrypt.Net-Next cho mật khẩu và jQuery cho unobtrusive validation của Web Forms. `Global.asax` đăng ký script mapping; mỗi Master Page có một ScriptManager dùng file local. Các dependency bắc cầu được restore cùng package chính, có binding redirect trong Web.config. NuGet.Config chỉ định nguồn NuGet chính thức.
+
+Khi triển khai tài khoản, dùng cặp `BCrypt.Net.BCrypt.EnhancedHashPassword` / `EnhancedVerify` nhất quán để hỗ trợ mật khẩu dài; để thư viện tự sinh salt. Không trộn với cặp API hash thường. Hiện mới kiểm tra thư viện, chưa có chức năng đăng nhập hoặc lưu mật khẩu.
+
 ## Quy ước
 
 - Bốn dấu cách; dấu ngoặc C# xuống dòng; tên nghiệp vụ tiếng Việt không dấu.

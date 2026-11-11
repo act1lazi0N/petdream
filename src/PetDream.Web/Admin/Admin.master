@@ -9,6 +9,9 @@
 </head>
 <body>
     <form id="form_quantri" runat="server">
+        <asp:ScriptManager ID="script_quantri" runat="server" EnableCdn="false">
+            <Scripts><asp:ScriptReference Name="jquery" /></Scripts>
+        </asp:ScriptManager>
         <header class="site-header">
             <a class="brand" href="<%= ResolveUrl("~/Admin/Default.aspx") %>">PetDream<span>Khung quản trị</span></a>
             <a href="<%= ResolveUrl("~/Default.aspx") %>">Về trang chủ</a>
