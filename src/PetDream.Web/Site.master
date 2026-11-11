@@ -1,0 +1,26 @@
+<%@ Master Language="C#" %>
+<!DOCTYPE html>
+<html lang="vi">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PetDream</title>
+    <link href="~/Content/site.css" rel="stylesheet" runat="server" />
+    <asp:ContentPlaceHolder ID="HeadContent" runat="server" />
+</head>
+<body>
+    <a class="skip-link" href="#noi-dung">Đến nội dung chính</a>
+    <form id="form_chinh" runat="server">
+        <header class="site-header">
+            <a class="brand" href="<%= ResolveUrl("~/Default.aspx") %>">PetDream<span>Thế giới thú cưng đáng yêu</span></a>
+            <nav aria-label="Điều hướng chính">
+                <a href="<%= ResolveUrl("~/Default.aspx") %>">Trang chủ</a>
+            </nav>
+        </header>
+        <main id="noi-dung" class="container">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+        </main>
+        <footer class="site-footer">PetDream · Ngôi nhà của những người yêu thú cưng</footer>
+    </form>
+</body>
+</html>

@@ -1,0 +1,16 @@
+.vs/
+*.suo
+*.user
+*.userosscache
+.artifacts/
+src/PetDream.Web/Bin/
+src/PetDream.Web/obj/
+src/PetDream.Web/ConnectionStrings.config
+src/PetDream.Web/App_Data/*
+!src/PetDream.Web/App_Data/.gitkeep
+*.mdf
+*.ldf
+*.bak
+.env
+.env.*
+*.log

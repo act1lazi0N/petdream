@@ -1,0 +1,29 @@
+# Kiến trúc PetDream
+
+## Nền tảng
+
+ASP.NET Web Site trên .NET Framework 4.8, C#, SQL Server và IIS Express.
+Solution dùng đường dẫn tương đối. Đây là Web Site nên không có `.csproj`.
+Không dùng ASP.NET Core, ORM hoặc framework JavaScript trong khung này.
+
+Luồng phát triển: trang `.aspx` → code-behind `.aspx.cs` → lớp `DAO_*` → stored procedure.
+`DAO_CoSo` cung cấp SqlConnection chưa mở; DAO cụ thể phải dùng `using` và SqlParameter có kiểu.
+Khung không phụ thuộc DLL SqlDataAccess/FreeTextBox của bài mẫu.
+
+## Quy ước
+
+- Bốn dấu cách; dấu ngoặc C# xuống dòng; tên nghiệp vụ tiếng Việt không dấu.
+- Control dùng tiền tố `txt_`, `btn_`, `lbl_`, `ddl_`, `grv_`, `rpt_`.
+- Khởi tạo dữ liệu một lần trong `!IsPostBack`; thao tác ghi phải kiểm tra server-side.
+- CSS dùng chung trong `Content`; giao diện khách và quản trị có Master Page riêng.
+- Không đưa thông tin đăng nhập, đường dẫn máy cá nhân hoặc dữ liệu runtime vào commit.
+
+## Các phần phát triển sau
+
+Khách: danh sách/chi tiết thú cưng, tìm kiếm/lọc, tài khoản, giỏ, đặt hàng COD, lịch sử, đánh giá, liên hệ.
+Quản trị: loài, thú cưng, tài khoản, đơn hàng, đánh giá; vai trò admin và nhân viên.
+Seed: 10 chó, 10 mèo, 10 hamster; mỗi bé một hồ sơ và chỉ bán một lần.
+Đặt hàng cần đăng nhập, phí giao 30.000đ, transaction chống giữ trùng và cơ chế hủy đơn.
+
+Trang `/Admin/Default.aspx` hiện chỉ là nội dung tĩnh công khai, không có dữ liệu hay thao tác nhạy cảm.
+Phải bổ sung xác thực và kiểm tra quyền phía server trước khi thêm chức năng quản trị.
