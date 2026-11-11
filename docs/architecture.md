@@ -24,11 +24,19 @@ Khi triển khai tài khoản, dùng cặp `BCrypt.Net.BCrypt.EnhancedHashPasswo
 - CSS dùng chung trong `Content`; giao diện khách và quản trị có Master Page riêng.
 - Không đưa thông tin đăng nhập, đường dẫn máy cá nhân hoặc dữ liệu runtime vào commit.
 
+## Catalog đã triển khai
+
+`Default.aspx`, `ThuCung.aspx`, `ChiTietThuCung.aspx` gọi `DAO_THU_CUNG`; thẻ dùng chung ở `Controls/TheThuCung.ascx`. `BoLocThuCung` kiểm tra query và sinh URL giữ bộ lọc khi phân trang. Form tìm kiếm dùng postback rồi redirect sang GET để URL có thể chia sẻ; không ghép SQL từ đầu vào.
+
+SQL chia thành schema, stored procedure, seed trong `database`. DAO dùng tham số có kiểu, timeout 15 giây và DataSet/DataTable. Bộ lọc hỗ trợ `q`, `loai`, `gioitinh` (D/C), `min`, `max`, `sort` (moi/gia_tang/gia_giam), `page`. Thông tin trạng thái/phân trang do SQL trả về.
+
+Hồ sơ ngừng bán/xóa mềm không xuất hiện công khai. Chi tiết trả 404 nếu không có hồ sơ; lỗi nhập liệu trả 400; lỗi SQL/cấu hình trả 503 với thông báo chung. Nội dung dữ liệu được HTML encode; ảnh chỉ nhận các sprite local đã cho phép. Không tự tạo database hoặc dùng dữ liệu thay thế khi SQL lỗi.
+
 ## Các phần phát triển sau
 
-Khách: danh sách/chi tiết thú cưng, tìm kiếm/lọc, tài khoản, giỏ, đặt hàng COD, lịch sử, đánh giá, liên hệ.
+Khách: tài khoản, giỏ, đặt hàng COD, lịch sử, đánh giá, liên hệ.
 Quản trị: loài, thú cưng, tài khoản, đơn hàng, đánh giá; vai trò admin và nhân viên.
-Seed: 10 chó, 10 mèo, 10 hamster; mỗi bé một hồ sơ và chỉ bán một lần.
+Seed hiện có: 10 chó, 10 mèo, 10 hamster; mỗi bé một hồ sơ và chỉ bán một lần.
 Đặt hàng cần đăng nhập, phí giao 30.000đ, transaction chống giữ trùng và cơ chế hủy đơn.
 
 Trang `/Admin/Default.aspx` hiện chỉ là nội dung tĩnh công khai, không có dữ liệu hay thao tác nhạy cảm.

@@ -1,17 +1,19 @@
 # PetDream
 
-Khung đồ án website bán thú cưng bằng **ASP.NET Web Forms, C#, .NET Framework 4.8 và SQL Server**.
+Đồ án website bán thú cưng bằng **ASP.NET Web Forms, C#, .NET Framework 4.8 và SQL Server**.
 Phong cách giao diện hồng/tím pastel, lấy cảm hứng từ mẫu PetDream.
 
 ## Hiện có
 
 - Solution Web Site dùng đường dẫn tương đối, mở và chạy trực tiếp trong Visual Studio.
-- Master Page khách và quản trị; trang chủ tĩnh responsive và trang khung quản trị.
-- Lớp cơ sở DAO dùng ADO.NET, cấu hình LocalDB mẫu không chứa mật khẩu.
+- Trang chủ, danh mục và chi tiết thú cưng responsive, đọc dữ liệu SQL Server qua ADO.NET/stored procedure.
+- Tìm tên/giống không phân biệt hoa thường hoặc dấu tiếng Việt; lọc loài, giới tính, khoảng giá; sắp xếp và phân trang 10 hồ sơ.
+- Schema, procedure và seed chạy lại được: 3 loài, 30 hồ sơ, 30 ảnh minh họa trong 3 tệp local.
+- Master Page khách/quản trị và trang khung quản trị; cấu hình LocalDB mẫu không chứa mật khẩu.
 - Dependency cố định phiên bản, restore bằng NuGet trong IDE; JavaScript được phục vụ local.
 - Quy ước mã nguồn, thư mục database và tài liệu kiến trúc.
 
-Chưa có đăng nhập, CRUD, database/schema, dữ liệu thú cưng hoặc đặt hàng. Các trang khung chạy mà không mở kết nối SQL Server.
+Chưa có đăng nhập, quản trị CRUD, giỏ hàng, đặt hàng hoặc đánh giá. Hồ sơ và ảnh AI là dữ liệu minh họa cho đồ án.
 
 ## Chạy bằng Visual Studio
 
@@ -19,10 +21,11 @@ Yêu cầu Windows, Visual Studio với workload **ASP.NET and web development**
 
 1. Mở `PetDream.sln`.
 2. Chuột phải solution → **Restore NuGet Packages**. Cần Internet cho lần tải package đầu tiên.
-3. Chọn `PetDream.Web` làm **StartUp Project**, chọn `Default.aspx` làm **Start Page** nếu IDE chưa chọn sẵn.
-4. Chọn **Build Solution**, rồi nhấn **F5** hoặc **Ctrl+F5** để chạy với IIS Express.
+3. Mở SSMS hoặc SQL Server Object Explorer trong Visual Studio, kết nối `(localdb)\MSSQLLocalDB` bằng Windows Authentication. Chạy lần lượt ba file SQL theo [hướng dẫn database](database/README.md).
+4. Chọn `PetDream.Web` làm **StartUp Project**, chọn `Default.aspx` làm **Start Page** nếu IDE chưa chọn sẵn.
+5. Chọn **Build Solution**, rồi nhấn **F5** hoặc **Ctrl+F5** để chạy với IIS Express.
 
-Trang quản trị khởi đầu ở `/Admin/Default.aspx`. Cổng gợi ý là 8088; dùng địa chỉ thực tế IDE mở. Không cần chạy script hoặc tạo database để xem các trang khung.
+Trang khách: `/Default.aspx`, `/ThuCung.aspx`, `/ChiTietThuCung.aspx?id=1`. Trang khung quản trị: `/Admin/Default.aspx`. Cổng gợi ý là 8088; dùng địa chỉ thực tế IDE mở. Không cần script PowerShell; database được chuẩn bị trong IDE/SSMS trước khi chạy.
 
 Nếu IDE không tự restore, vào **Tools → Options → NuGet Package Manager → General** và bật hai tùy chọn cho phép tải package còn thiếu và tự kiểm tra package khi build.
 
@@ -41,12 +44,14 @@ jQuery và source map trong `Scripts/vendor` được commit cùng license heade
 
 ## Cấu hình database
 
-`Web.config` mặc định dùng `ConnectionStrings.example.config`, chứa Windows Authentication đến `(localdb)\MSSQLLocalDB`, database `PetDream`. Không có mật khẩu trong cấu hình được commit. Chưa tạo database hoặc xác minh kết nối.
+`Web.config` mặc định dùng `ConnectionStrings.example.config`, chứa Windows Authentication đến `(localdb)\MSSQLLocalDB`, database `PetDream`. Không có mật khẩu trong cấu hình được commit. Kết nối đã được kiểm tra bằng ADO.NET và IIS Express trên máy phát triển.
 
 Để dùng cấu hình riêng, sao chép file mẫu thành `ConnectionStrings.config` trong cùng thư mục bằng IDE, rồi đổi `configSource` trong `Web.config` sang `ConnectionStrings.config`. File local được Git bỏ qua. Trước khi chia sẻ thay đổi, giữ `Web.config` trỏ về file mẫu để người khác clone vẫn chạy được.
 
 Nếu môi trường yêu cầu SQL Authentication, chỉ chỉnh **file local**: bỏ `Integrated Security=True`, thêm `User ID` và `Password` của máy chạy. Không đưa mật khẩu thật vào file mẫu hoặc README.
-Mẫu giữ `Encrypt=True;TrustServerCertificate=False`; cấu hình chứng chỉ/kết nối phải được xác minh khi triển khai database. `Command Timeout` từ SSMS không phải khóa connection string của `System.Data.SqlClient`; đặt timeout trên `SqlCommand` khi triển khai DAO.
+Mẫu **chỉ dành cho LocalDB trên cùng máy**, dùng `Encrypt=False;TrustServerCertificate=False` vì instance kiểm thử báo không hỗ trợ mã hóa khi dùng ADO.NET. Không dùng mẫu này cho SQL Server từ xa: tạo cấu hình riêng với `Encrypt=True` và chứng chỉ hợp lệ. `Command Timeout` từ SSMS không phải khóa connection string của `System.Data.SqlClient`; DAO đặt timeout 15 giây trên `SqlCommand`.
+
+Nếu database chưa được chuẩn bị hoặc không kết nối được, trang trả HTTP 503 với thông báo chung; không tự tạo database hoặc thay bằng dữ liệu giả. Đầu vào bộ lọc sai trả 400; hồ sơ không tồn tại, ngừng bán hoặc xóa mềm trả 404.
 
 ## Quy tắc nhánh
 
@@ -73,8 +78,10 @@ src/PetDream.Web/
   Default.aspx
   Web.config
   packages.config
-database/                # Dành cho SQL ở giai đoạn sau
+database/                # Schema, stored procedure và seed catalog
 docs/architecture.md
 ```
 
 Thư mục `packages`, DLL trong `Bin`, cấu hình IDE `.vs` và output `.artifacts` được Git bỏ qua.
+
+Xem [kiến trúc catalog](docs/architecture.md), [nguồn ảnh](docs/catalog-assets.md) và [kiểm chứng feature](docs/catalog-verification.md).
