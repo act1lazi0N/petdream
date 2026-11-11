@@ -5,79 +5,68 @@ Phong cách giao diện hồng/tím pastel, lấy cảm hứng từ mẫu PetDre
 
 ## Hiện có
 
-- Solution Web Site dùng đường dẫn tương đối.
+- Solution Web Site dùng đường dẫn tương đối, mở và chạy trực tiếp trong Visual Studio.
 - Master Page khách và quản trị; trang chủ tĩnh responsive và trang khung quản trị.
-- Lớp cơ sở DAO dùng ADO.NET, cấu hình LocalDB tách riêng theo máy.
-- Script khởi tạo cấu hình, biên dịch và chạy IIS Express.
+- Lớp cơ sở DAO dùng ADO.NET, cấu hình LocalDB mẫu không chứa mật khẩu.
+- Dependency cố định phiên bản, restore bằng NuGet trong IDE; JavaScript được phục vụ local.
 - Quy ước mã nguồn, thư mục database và tài liệu kiến trúc.
-- Dependency cố định phiên bản, tự restore qua NuGet và phục vụ JavaScript local.
 
 Chưa có đăng nhập, CRUD, database/schema, dữ liệu thú cưng hoặc đặt hàng. Các trang khung chạy mà không mở kết nối SQL Server.
 
-## Yêu cầu môi trường
+## Chạy bằng Visual Studio
 
-- Windows, .NET Framework 4.8 Developer Pack và IIS Express.
-- Visual Studio với công cụ ASP.NET/.NET Framework nếu mở solution bằng IDE.
-- SQL Server LocalDB cho giai đoạn triển khai dữ liệu; khung giao diện chưa yêu cầu database.
-- Kết nối Internet khi restore lần đầu; các lần sau dùng package cache trong `.artifacts/`.
+Yêu cầu Windows, Visual Studio với workload **ASP.NET and web development**, .NET Framework 4.8 Developer Pack và IIS Express. Visual Studio Code không thay thế Visual Studio cho quy trình này.
 
-## Chạy local
+1. Mở `PetDream.sln`.
+2. Chuột phải solution → **Restore NuGet Packages**. Cần Internet cho lần tải package đầu tiên.
+3. Chọn `PetDream.Web` làm **StartUp Project**, chọn `Default.aspx` làm **Start Page** nếu IDE chưa chọn sẵn.
+4. Chọn **Build Solution**, rồi nhấn **F5** hoặc **Ctrl+F5** để chạy với IIS Express.
 
-Tại thư mục repository:
+Trang quản trị khởi đầu ở `/Admin/Default.aspx`. Cổng gợi ý là 8088; dùng địa chỉ thực tế IDE mở. Không cần chạy script hoặc tạo database để xem các trang khung.
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-Local.ps1
-```
-
-Mở `http://localhost:8088/` hoặc `/Admin/Default.aspx`. Dừng server bằng Ctrl+C.
-Đổi cổng bằng `-Port 8090`. Có thể mở `PetDream.sln` bằng Visual Studio sau khi chạy `scripts\Initialize-Local.ps1`.
+Nếu IDE không tự restore, vào **Tools → Options → NuGet Package Manager → General** và bật hai tùy chọn cho phép tải package còn thiếu và tự kiểm tra package khi build.
 
 ## Thư viện
 
 | Thư viện | Phiên bản | Mục đích |
 | --- | --- | --- |
 | [BCrypt.Net-Next](https://www.nuget.org/packages/BCrypt.Net-Next/4.2.0) | 4.2.0 | Băm và xác minh mật khẩu khi triển khai tài khoản |
-| [jQuery](https://www.nuget.org/packages/jQuery/3.7.1) | 3.7.1 | Script mapping cho Web Forms unobtrusive validation, được nạp local qua hai Master Page |
+| [jQuery](https://www.nuget.org/packages/jQuery/3.7.1) | 3.7.1 | Script mapping cho Web Forms unobtrusive validation, nạp local qua hai Master Page |
 
-Các dependency bắc cầu của BCrypt được cố định trong `src/PetDream.Web/packages.config`: System.Buffers 4.6.1, System.Memory 4.6.3, System.Numerics.Vectors 4.6.1, System.Runtime.CompilerServices.Unsafe 6.1.2. ADO.NET và các control/validator Web Forms dùng thư viện có sẵn trong .NET Framework.
+Các dependency bắc cầu của BCrypt được cố định trong `src/PetDream.Web/packages.config`: System.Buffers 4.6.1, System.Memory 4.6.3, System.Numerics.Vectors 4.6.1, System.Runtime.CompilerServices.Unsafe 6.1.2. ADO.NET và các control/validator Web Forms có sẵn trong .NET Framework.
 
-`Initialize-Local.ps1` (được gọi từ build/start) tự restore. Có thể chạy riêng:
+NuGet restore vào thư mục `packages` cạnh solution. Các file `Bin/*.dll.refresh` được commit để Visual Studio lấy đúng DLL khi build; DLL và package tải về không commit. Các đường dẫn trong file `.refresh` tính từ `src/PetDream.Web`, không phải từ `Bin`.
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Restore-Dependencies.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Test-Dependencies.ps1
-```
-
-NuGet CLI 6.14.0 được tải từ `dist.nuget.org`, kiểm tra SHA-256 trước khi chạy; package chỉ lấy từ nguồn khai báo trong `NuGet.Config`. Script copy DLL tương thích .NET Framework vào `Bin` và jQuery vào `Scripts/vendor`; không dùng CDN lúc chạy website. Các thư mục này cùng package cache không commit.
-
-Khi đổi phiên bản, cập nhật `packages.config`, asset mapping trong script restore, script mapping trong `Global.asax.cs` nếu đổi jQuery, và binding redirect nếu phiên bản assembly thay đổi. Chạy lại build và kiểm tra dependency. Không dùng `dotnet add package` trực tiếp vì đây là Web Site không có `.csproj`.
+jQuery và source map trong `Scripts/vendor` được commit cùng license header vì package restore không khôi phục content vào Web Site. Khi nâng phiên bản trong **Manage NuGet Packages**, kiểm tra lại tham chiếu `.dll.refresh`, binding redirect và cập nhật jQuery trong `Scripts/vendor` cùng mapping ở `Global.asax.cs`. Không dùng `dotnet add package` hoặc `dotnet run` cho Web Site này.
 
 ## Cấu hình database
 
-Script tự sao chép `ConnectionStrings.example.config` thành `ConnectionStrings.config` nếu chưa có; không ghi đè bản đang dùng.
-File local nằm trong `src/PetDream.Web`, được Git bỏ qua. Mẫu dùng Windows Authentication đến `(localdb)\MSSQLLocalDB`, database `PetDream`, không chứa mật khẩu và chưa được xác minh kết nối.
+`Web.config` mặc định dùng `ConnectionStrings.example.config`, chứa Windows Authentication đến `(localdb)\MSSQLLocalDB`, database `PetDream`. Không có mật khẩu trong cấu hình được commit. Chưa tạo database hoặc xác minh kết nối.
 
-Nếu môi trường yêu cầu SQL Authentication, chỉnh **file local**: bỏ `Integrated Security=True`, thêm `User ID` và `Password` của máy chạy. Không đưa mật khẩu thật vào file mẫu hoặc README.
-Mẫu giữ `Encrypt=True;TrustServerCertificate=False`; cấu hình chứng chỉ/kết nối phải được xác minh trước khi dùng database.
-`Command Timeout` từ SSMS không phải khóa connection string của `System.Data.SqlClient`; cấu hình timeout câu lệnh trên `SqlCommand` khi triển khai DAO.
+Để dùng cấu hình riêng, sao chép file mẫu thành `ConnectionStrings.config` trong cùng thư mục bằng IDE, rồi đổi `configSource` trong `Web.config` sang `ConnectionStrings.config`. File local được Git bỏ qua. Trước khi chia sẻ thay đổi, giữ `Web.config` trỏ về file mẫu để người khác clone vẫn chạy được.
+
+Nếu môi trường yêu cầu SQL Authentication, chỉ chỉnh **file local**: bỏ `Integrated Security=True`, thêm `User ID` và `Password` của máy chạy. Không đưa mật khẩu thật vào file mẫu hoặc README.
+Mẫu giữ `Encrypt=True;TrustServerCertificate=False`; cấu hình chứng chỉ/kết nối phải được xác minh khi triển khai database. `Command Timeout` từ SSMS không phải khóa connection string của `System.Data.SqlClient`; đặt timeout trên `SqlCommand` khi triển khai DAO.
 
 ## Cấu trúc
 
 ```text
 PetDream.sln
+NuGet.Config
 src/PetDream.Web/
   App_Code/              # DAO và lớp dùng chung
   Admin/                 # Master Page và trang khung quản trị
+  Bin/*.dll.refresh      # Tham chiếu DLL cho Visual Studio
   App_Data/              # Dữ liệu local, không commit
   Content/               # CSS
   Images/                # Asset hình ảnh
+  Scripts/vendor/        # jQuery local
   Site.master
   Default.aspx
   Web.config
-scripts/                 # Khởi tạo, biên dịch, chạy local
+  packages.config
 database/                # Dành cho SQL ở giai đoạn sau
 docs/architecture.md
 ```
 
-Output biên dịch nằm trong `.artifacts/` và không được commit. Không dùng `dotnet run` cho dự án Web Forms này.
+Thư mục `packages`, DLL trong `Bin`, cấu hình IDE `.vs` và output `.artifacts` được Git bỏ qua.

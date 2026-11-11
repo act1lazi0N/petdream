@@ -4,6 +4,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "PetDream.Web", "src\PetDream.Web\", "{C3A9EBBD-5392-468F-8262-62C716E8684C}"
 	ProjectSection(WebsiteProperties) = preProject
+		UseIISExpress = "true"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8"
 		Debug.AspNetCompiler.VirtualPath = "/PetDream"
 		Debug.AspNetCompiler.PhysicalPath = "src\PetDream.Web\"

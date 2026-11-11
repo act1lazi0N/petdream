@@ -10,7 +10,9 @@ Luồng phát triển: trang `.aspx` → code-behind `.aspx.cs` → lớp `DAO_*
 `DAO_CoSo` cung cấp SqlConnection chưa mở; DAO cụ thể phải dùng `using` và SqlParameter có kiểu.
 Khung không phụ thuộc DLL SqlDataAccess/FreeTextBox của bài mẫu.
 
-Dependency ngoài được cố định trong `packages.config`: BCrypt.Net-Next cho mật khẩu và jQuery cho unobtrusive validation của Web Forms. `Global.asax` đăng ký script mapping; mỗi Master Page có một ScriptManager dùng file local. Các dependency bắc cầu được restore cùng package chính, có binding redirect trong Web.config. NuGet.Config chỉ định nguồn NuGet chính thức.
+Dependency ngoài được cố định trong `packages.config`: BCrypt.Net-Next cho mật khẩu và jQuery cho unobtrusive validation của Web Forms. Visual Studio restore NuGet vào `packages` ở gốc solution; các file `Bin/*.dll.refresh` trỏ đến DLL bằng đường dẫn tương đối tính từ gốc Web Site. Build solution sẽ chép DLL vào Bin, không cần script PowerShell. Các dependency bắc cầu có binding redirect trong Web.config. NuGet.Config chỉ định nguồn NuGet chính thức.
+
+`Global.asax` đăng ký script mapping; mỗi Master Page có một ScriptManager dùng file local. Các file jQuery trong `Scripts/vendor` được commit vì NuGet restore không cài lại content vào Web Site. Giữ license header và cập nhật các file này khi nâng phiên bản jQuery. Cấu hình kết nối mặc định dùng file mẫu không chứa mật khẩu; cấu hình riêng có thể đặt trong file bị Git bỏ qua theo README.
 
 Khi triển khai tài khoản, dùng cặp `BCrypt.Net.BCrypt.EnhancedHashPassword` / `EnhancedVerify` nhất quán để hỗ trợ mật khẩu dài; để thư viện tự sinh salt. Không trộn với cặp API hash thường. Hiện mới kiểm tra thư viện, chưa có chức năng đăng nhập hoặc lưu mật khẩu.
 
