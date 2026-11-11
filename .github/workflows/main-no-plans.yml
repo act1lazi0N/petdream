@@ -1,0 +1,31 @@
+name: Main branch policy
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  main-no-plans:
+    name: main-no-plans
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out candidate tree
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Reject development plans on main
+        shell: bash
+        run: |
+          plan_files="$(git ls-tree -r --name-only HEAD -- docs/plans)"
+          if [[ -n "$plan_files" ]]; then
+            echo "::error::Development plans must stay on develop. Remove docs/plans from the candidate tree."
+            printf '%s\n' "$plan_files"
+            exit 1
+          fi
+          echo "No development plans found in the candidate tree."

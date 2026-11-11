@@ -48,6 +48,14 @@ jQuery và source map trong `Scripts/vendor` được commit cùng license heade
 Nếu môi trường yêu cầu SQL Authentication, chỉ chỉnh **file local**: bỏ `Integrated Security=True`, thêm `User ID` và `Password` của máy chạy. Không đưa mật khẩu thật vào file mẫu hoặc README.
 Mẫu giữ `Encrypt=True;TrustServerCertificate=False`; cấu hình chứng chỉ/kết nối phải được xác minh khi triển khai database. `Command Timeout` từ SSMS không phải khóa connection string của `System.Data.SqlClient`; đặt timeout trên `SqlCommand` khi triển khai DAO.
 
+## Quy tắc nhánh
+
+- Phát triển trên `develop`. Kế hoạch nằm tại `docs/plans/petdream-implementation.md` và chỉ được theo dõi trên nhánh này.
+- `/docs/plans/` được ignore để tránh vô tình thêm file mới. Khi chủ động thêm kế hoạch trên `develop`, dùng `git add -f` cho đúng file; sửa file đã được theo dõi thì stage bình thường.
+- `.gitignore` không chặn file đã được theo dõi đi theo merge. Workflow `main-no-plans` kiểm tra toàn bộ cây file của PR vào `main` và báo lỗi nếu còn `docs/plans`.
+- Khi đưa code lên `main`, tạo nhánh release từ `main`, cherry-pick các commit triển khai không chứa kế hoạch rồi mở PR. Không merge trực tiếp toàn bộ `develop` có file kế hoạch vào `main`.
+- GitHub phải bật required check `main-no-plans` và yêu cầu PR cho `main` để quy tắc được cưỡng chế trước khi merge; chỉ có workflow hoặc ignore là chưa đủ.
+
 ## Cấu trúc
 
 ```text

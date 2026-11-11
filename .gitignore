@@ -16,3 +16,7 @@ src/PetDream.Web/App_Data/*
 .env
 .env.*
 *.log
+
+# Development plans are deliberately tracked only on develop (git add -f).
+# Ignore rules do not prevent merges; main is guarded by a required CI check.
+/docs/plans/
