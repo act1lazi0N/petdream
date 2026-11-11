@@ -1,6 +1,6 @@
 # Kế hoạch xây dựng PetDream
 
-Ngày cập nhật: 11/11/2026. Tài liệu làm việc trên nhánh `develop`, không đưa vào `main`.
+Ngày cập nhật: 11/11/2026. Tài liệu được chỉnh sửa/commit trên `develop`, các nhánh feature đồng bộ về để làm việc; không đưa vào `main`.
 
 ## 1. Mục tiêu và các quyết định đã chốt
 
@@ -23,16 +23,21 @@ Nguồn yêu cầu đã đọc: tài liệu “Các chức năng phát triển�
 
 - [x] Khung Web Site .NET Framework 4.8, solution dùng đường dẫn tương đối.
 - [x] Master Page khách và quản trị, trang chủ tĩnh pastel, trang khởi đầu quản trị.
-- [x] Lớp `DAO_CoSo` tạo SqlConnection chưa mở; chưa có DAO nghiệp vụ.
+- [x] Lớp `DAO_CoSo` tạo SqlConnection chưa mở; DAO nghiệp vụ catalog đã có trong nhánh feature bên dưới.
 - [x] BCrypt.Net-Next 4.2.0 và jQuery 3.7.1, cố định dependency trong `packages.config`.
 - [x] NuGet restore vào `packages`; `Bin/*.dll.refresh` giúp IDE lấy DLL; jQuery và license lưu trong repo.
 - [x] Cấu hình kết nối mẫu không chứa mật khẩu, mặc định `(localdb)\MSSQLLocalDB`, database `PetDream`.
 - [x] Bỏ các script PowerShell; README hướng dẫn restore/build/chạy trên Visual Studio.
 - [x] Khung đã build bằng Visual Studio; dependency đã được kiểm tra trên .NET Framework và IIS Express.
-- [ ] Chưa tạo schema, stored procedure hoặc dữ liệu thú cưng.
-- [ ] Chưa xác minh kết nối LocalDB và chưa triển khai nghiệp vụ.
+- [x] Schema catalog, 3 stored procedure, seed 30 hồ sơ/3 loài và ảnh local: đã triển khai trên `features/pet-catalog`.
+- [x] Kết nối LocalDB thật, trang chủ, tìm/lọc/phân trang và chi tiết: đã kiểm tra trên nhánh feature.
+- [ ] Đưa code catalog vào `develop` qua PR sau review. Cập nhật plan không đồng nghĩa code feature đã được merge.
 
 Các commit nền tảng: `c4eaa2c` (khung), `c924c27` (dependency), `22688fa` (quy trình IDE). Đây là trạng thái ban đầu của kế hoạch; kết quả build khung không chứng minh chức năng hoặc database đã hoàn thành.
+
+Tiến độ mới: `features/pet-catalog`, commit `1777ada`, đã build bằng Visual Studio/MSBuild, đạt 19 kiểm tra .NET/SQL và kiểm tra trình duyệt ở 390/768/1440px. Đã kiểm tra seed lặp, lọc kết hợp, tìm không dấu, phân trang, 400/404/503 và xóa mềm. Bằng chứng chi tiết ở `docs/catalog-verification.md` trên nhánh feature. Chưa triển khai tài khoản/giỏ/đơn hàng/quản trị/đánh giá.
+
+LocalDB thử nghiệm không hỗ trợ mã hóa khi kết nối ADO.NET với `Encrypt=True`; mẫu cấu hình của feature dùng `Encrypt=False` chỉ cho instance trên cùng máy. SQL Server từ xa phải có cấu hình riêng với `Encrypt=True` và chứng chỉ hợp lệ.
 
 Không sao chép thông tin đăng nhập được trao đổi trong chat vào source, SQL, tài liệu hoặc commit.
 
@@ -132,6 +137,35 @@ Tạo banner, logo/mascot và ảnh nhất quán cho 30 hồ sơ. Lưu asset, fo
 
 Mỗi mốc phải kiểm tra chạy được trước khi chuyển tiếp. Tiếp tục từ khung đã có, không dựng lại project hoặc đưa các script chạy local đã bỏ trở lại.
 
+### 5.3 Phân chia công việc theo feature
+
+Chia theo gói công việc để mỗi nhánh có đầu ra độc lập, có thể review và kiểm thử. Chưa có danh sách tên thành viên nên cột phụ trách là vai trò công việc, không phải người đã được chỉ định; người nhận việc ghi tên vào plan trên `develop` trước khi bắt đầu. Một người có thể kiêm nhiều vai trò. Không tự tạo đồng loạt các nhánh chưa có người làm.
+
+| Mã | Nhánh | Phụ trách theo vai trò | Công việc và đầu ra | Phụ thuộc / trạng thái |
+| --- | --- | --- | --- | --- |
+| F01 | `features/pet-catalog` | Catalog + nền dữ liệu | Schema 3 bảng, seed 30 bé, asset, trang chủ/danh sách/chi tiết, bộ lọc, phân trang, xử lý lỗi | Đã triển khai và kiểm tra ở `1777ada`; chờ review/merge vào develop |
+| F02 | `features/accounts-auth` | Tài khoản + bảo mật | TAI_KHOAN; đăng ký, đăng nhập bằng email/điện thoại, đăng xuất, hồ sơ, đổi mật khẩu; BCrypt, phiên, khóa tài khoản, role guard admin/staff, CSRF cho thao tác ghi | Sau F01; là nền xác thực cho các module quản trị |
+| F03 | `features/session-cart` | Giỏ hàng khách | Giỏ Session, thêm/xóa mỗi bé một lần, quantity luôn 1, kiểm tra trạng thái hiển thị, giữ giỏ qua đăng nhập; tổng tiền dự kiến | Sau F01; tích hợp bước đăng nhập khi F02 sẵn sàng |
+| F04 | `features/cod-orders` | Đơn hàng + giao dịch SQL | DON_HANG/CHI_TIET_DON_HANG; checkout COD, phí 30.000đ, snapshot tên/giá, transaction giữ chỗ, mã chống gửi lặp, lịch sử/chi tiết/hủy đơn của khách | Sau F02 + F03; cung cấp nghiệp vụ đơn dùng chung cho quản trị |
+| F05 | `features/admin-catalog` | Quản trị loài/thú cưng | GridView và form thêm/sửa/xóa mềm/ẩn; upload ảnh có kiểm tra; phân quyền admin/staff; ràng buộc danh mục và hồ sơ trong đơn | Sau F01 + F02 + F04; không cho sửa trạng thái để né giữ chỗ/bán |
+| F06 | `features/admin-accounts` | Quản trị tài khoản | Danh sách/tạo/sửa/phân quyền/khóa/xóa mềm; bảo vệ admin hoạt động cuối; xử lý phiên của tài khoản bị khóa/đổi quyền | Sau F02; admin toàn quyền, staff không truy cập |
+| F07 | `features/admin-orders` | Vận hành đơn hàng | Tạo hộ khách qua cùng procedure checkout, xem/cập nhật trạng thái/hủy, lưu trữ đơn đã hủy; giao thành công chuyển bé đã bán | Sau F02 + F04; dùng chung giao dịch, không viết luồng giữ chỗ thứ hai |
+| F08 | `features/pet-reviews` | Đánh giá khách + kiểm duyệt | DANH_GIA; khách thêm/sửa/xóa sau giao; một đánh giá mỗi bé; duyệt/ẩn, điểm trung bình; admin nhập có nhãn và người nhập | Sau F02 + F04 + F07; gắn vào chi tiết F01, module quản trị thứ năm |
+| F09 | `features/contact-form` | Giao diện liên hệ | Trang liên hệ, kiểm tra trường nhập, thông báo gửi thành công, điều hướng và responsive; không gửi email/lưu yêu cầu | Sau F01; làm độc lập với đơn hàng |
+| F10 | `features/demo-acceptance` | Tích hợp + nghiệm thu | Kiểm thử xuyên suốt, đối chiếu bảng chấm, dữ liệu đơn demo riêng, tài khoản demo ba vai trò, README IDE và checklist bàn giao | Sau F01–F09; chỉ kết thúc khi luồng nghiệm thu mục 6 đạt |
+
+Thứ tự nhận việc: F01 → F02/F03/F09 → F04/F06 → F05/F07 → F08 → F10. Có thể làm song song các gói không phụ thuộc nhau; chỉ bắt đầu phần tích hợp khi nhánh phụ thuộc đã merge vào `develop`. Nhánh hiện tại không tự triển khai các F02–F10.
+
+### 5.4 Ranh giới sở hữu và bàn giao
+
+- Mỗi feature sở hữu trang/code-behind, DAO, procedure và kiểm thử của mình. Khi cần sửa `Site.master`, `Admin.master`, CSS dùng chung, `Web.config` hoặc DAO chung, ghi rõ trong mô tả PR để tránh ghi đè thay đổi của nhóm khác.
+- SQL mới dùng tiền tố số duy nhất. Giữ `001–003` cho catalog; dành `004–006` cho F02, `007–009` cho F04, `010–012` cho F05, `013–015` cho F06, `016–018` cho F07, `019–021` cho F08. F03/F09 không cần bảng mới. Nếu cần thêm số, cập nhật phân bổ trên develop trước.
+- Không sửa schema/seed cũ để xóa dữ liệu đã có. Thay đổi tiếp theo dùng migration tăng dần, chạy lại an toàn, ghi thứ tự chạy trong database/README. Procedure có thể CREATE OR ALTER; không reset đơn/trạng thái khi seed lại.
+- F02 công bố cách lấy người dùng hiện tại, kiểm tra vai trò và kiểm tra CSRF. Mọi trang quản trị dùng cùng guard phía server trước khi đọc/ghi dữ liệu; ẩn link menu không thay thế phân quyền.
+- F04 sở hữu giao dịch đặt/hủy/chuyển trạng thái và quy tắc snapshot giá. F07 gọi lại hợp đồng này; F05 không tự sửa `giu_cho`/`da_ban` ngoài nghiệp vụ đơn.
+- Khi F05 hỗ trợ ảnh upload thật, mở rộng ANH_THU_CUNG/helper render hiện dùng sprite; giữ tương thích 30 ảnh demo và chặn đường dẫn/định dạng không hợp lệ.
+- Bàn giao mỗi feature: code + SQL/asset cần thiết + hướng dẫn IDE + kết quả kiểm tra. Build phải đạt; kiểm thử trường hợp thành công, đầu vào sai, lỗi dữ liệu và phân quyền nếu có. PR mô tả phạm vi, dependency, cách kiểm tra và phần chưa làm.
+
 ## 6. Kiểm thử và tiêu chí bàn giao
 
 - Build toàn bộ solution bằng Visual Studio; các trang chạy trên IIS Express sau restore NuGet từ bản clone sạch.
@@ -150,7 +184,46 @@ Chỉ đánh dấu đồ án hoàn thành khi luồng **đăng ký → chọn b�
 
 ## 7. Quy tắc Git cho tài liệu này
 
-- File này chỉ commit trên `develop`; `/docs/plans/` được ignore trên các nhánh để tránh thêm mới ngoài ý muốn.
-- Khi thêm file lần đầu trên `develop`, stage bằng `git add -f docs/plans/petdream-implementation.md`.
-- `.gitignore` không ngăn merge file đã được theo dõi. `main-no-plans` kiểm tra cây file của PR vào main; phải đặt thành required check kèm yêu cầu PR để chặn merge vi phạm.
-- Đưa code lên main qua nhánh release tạo từ main và chỉ cherry-pick commit triển khai không chứa kế hoạch. Không cherry-pick commit tài liệu này hoặc merge trực tiếp develop có kế hoạch vào main.
+### 7.1 Đặt tên nhánh và nhận việc
+
+- Nhánh chức năng bắt buộc theo mẫu **`features/<ten-feature>`**, dùng đúng tiền tố số nhiều `features/`. Phần tên dùng tiếng Anh ngắn, chữ thường ASCII, số nếu cần và dấu gạch ngang: `^[a-z0-9]+(-[a-z0-9]+)*$`.
+- Ví dụ hợp lệ: `features/pet-catalog`, `features/accounts-auth`, `features/cod-orders`. Không dùng khoảng trắng, tiếng Việt có dấu, dấu ngoặc nhọn, tên thành viên hoặc tên mơ hồ như `features/test`, `features/update`.
+- Một nhánh ứng với một gói công việc trong bảng 5.3; tên nhánh phải mô tả phạm vi cuối cùng. Dùng đúng tên đã phân bổ để tránh hai người làm trùng.
+- Tạo nhánh từ `develop` đã cập nhật, không từ `main` hoặc nhánh feature đang làm dở. Working tree phải sạch trước khi đổi nhánh; commit phần việc có chủ đích, không dùng reset/force để bỏ thay đổi.
+
+```bash
+git switch develop
+git pull --ff-only origin develop
+git switch -c features/accounts-auth
+# Thực hiện và kiểm tra feature
+git add <cac-file-thuoc-feature>
+git commit -m "feat(auth): add account registration and login"
+git push -u origin features/accounts-auth
+```
+
+### 7.2 Cập nhật plan và đồng bộ feature
+
+- Chỉnh sửa plan và commit tài liệu **trên develop**, tách khỏi commit code feature. Nhánh feature được phép chứa bản kế thừa của plan khi pull/merge develop; điều cấm là đưa plan vào main.
+- Khi thêm file lần đầu trên develop, dùng `git add -f docs/plans/petdream-implementation.md`; file đã tracked thì dùng `git add -u -- docs/plans/petdream-implementation.md` để chỉ stage bản cập nhật, không vướng thư mục cha bị ignore. `/docs/plans/` vẫn ignore để tránh thêm mới ngoài ý muốn.
+- Sau khi push commit plan lên develop, quay lại nhánh đang làm và kéo develop về bằng merge. Không rebase/force-push lịch sử nhánh đã chia sẻ.
+
+```bash
+git switch develop
+git pull --ff-only origin develop
+# Chỉnh plan: phạm vi, người nhận việc, dependency, trạng thái và kết quả kiểm tra
+git add -u -- docs/plans/petdream-implementation.md
+git commit -m "docs(plan): assign feature work and branch conventions"
+git push origin develop
+git switch features/pet-catalog
+git pull --no-rebase origin develop
+git push -u origin features/pet-catalog
+```
+
+- Nếu có conflict: giữ cả yêu cầu mới và phần triển khai liên quan, giải quyết theo từng file, kiểm tra lại phần bị ảnh hưởng rồi commit merge. Không chọn nguyên `ours/theirs` để bỏ toàn bộ phía còn lại.
+- PR feature luôn có **base = develop**. Trước khi merge, cập nhật develop vào feature, kiểm tra diff/build và ghi bằng chứng kiểm thử. Sau merge mới cập nhật trạng thái “đã tích hợp develop” trong plan.
+
+### 7.3 Đưa bản nghiệm thu lên main
+
+- `.gitignore` không ngăn file đã tracked đi theo merge. Workflow `main-no-plans` kiểm tra cây file; main đang yêu cầu PR và required check này, áp dụng cả admin.
+- Tạo nhánh `release/<phien-ban>` từ main rồi chỉ cherry-pick commit triển khai đã nghiệm thu. Commit đồng bộ/biên tập plan không được cherry-pick; không merge nguyên develop hoặc features có plan vào main.
+- Đối chiếu danh sách file trước PR lên main: không có `docs/plans/`, secret, database runtime, packages hoặc build output. Việc đồng bộ plan vào feature không thay đổi quy tắc này.
