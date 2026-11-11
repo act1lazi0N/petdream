@@ -18,12 +18,13 @@
             <a class="brand" href="<%= ResolveUrl("~/Default.aspx") %>">PetDream<span>Thế giới thú cưng đáng yêu</span></a>
             <nav aria-label="Điều hướng chính">
                 <a href="<%= ResolveUrl("~/Default.aspx") %>">Trang chủ</a>
+                <a href="<%= ResolveUrl("~/ThuCung.aspx") %>">Thú cưng <span aria-hidden="true">↗</span></a>
             </nav>
         </header>
         <main id="noi-dung" class="container">
             <asp:ContentPlaceHolder ID="MainContent" runat="server" />
         </main>
-        <footer class="site-footer">PetDream · Ngôi nhà của những người yêu thú cưng</footer>
+        <footer class="site-footer"><strong>PetDream</strong><p>Ngôi nhà của những người yêu thú cưng</p><small>Website đồ án · Hồ sơ và ảnh AI chỉ dùng minh họa</small></footer>
     </form>
 </body>
 </html>
