@@ -200,3 +200,47 @@ input:focus-visible,select:focus-visible,button:focus-visible { outline:3px soli
  .pet-card,.category-card { transition:box-shadow .2s,transform .2s; }
  .pet-card:hover { transform:translateY(-3px); box-shadow:0 12px 28px #663b6010; }
 }
+
+.account-card {
+    max-width: 580px;
+    margin: 28px auto;
+    padding: clamp(20px, 5vw, 40px);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    background: #fff;
+    box-shadow: 0 12px 32px #663b6010;
+}
+.account-card h1 { font-size: clamp(30px, 5vw, 44px); }
+.account-field { margin-block: 16px; }
+.account-field label { display: block; margin-bottom: 6px; font-weight: 600; }
+.account-field input {
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 12px;
+    border: 1px solid #dacee2;
+    border-radius: 10px;
+    background: #fffdfd;
+    color: var(--text);
+    font: inherit;
+}
+.field-error { color: #8f1942; }
+.account-message:not(:empty) {
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: #f5ecf8;
+}
+.account-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin-top: 18px;
+}
+.site-header .account-nav {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    column-gap: 20px;
+    row-gap: 6px;
+}
+@media (max-width: 430px) {
+    .site-header .account-nav { column-gap: 12px; }
+}

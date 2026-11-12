@@ -5,6 +5,8 @@ Kết nối `(localdb)\MSSQLLocalDB` bằng Windows Authentication trong **SQL S
 1. `001_catalog_schema.sql`: tạo database PetDream nếu chưa có và các bảng LOAI, THU_CUNG, ANH_THU_CUNG.
 2. `002_catalog_procedures.sql`: tạo/cập nhật ba stored procedure đọc danh mục, danh sách và chi tiết.
 3. `003_catalog_seed.sql`: thêm 10 chó, 10 mèo, 10 hamster cùng ảnh minh họa.
+4. `004_accounts_schema.sql`: tạo bảng TAI_KHOAN và ràng buộc email, điện thoại, vai trò.
+5. `005_accounts_procedures.sql`: tạo/cập nhật procedure đăng ký, tra danh tính, sửa hồ sơ và đổi mật khẩu.
 
 Mỗi file chứa `GO`, chạy bằng cửa sổ SQL Query. Không cần script PowerShell hoặc thao tác tự động lúc website khởi động. Nếu IDE hỏi encoding, chọn UTF-8 để giữ đúng tiếng Việt.
 
@@ -25,3 +27,21 @@ Mỗi bé là một cá thể, không có cột tồn kho. Trạng thái: `dang_
 Stored procedure danh sách trả hai bảng: (1) Tong, Trang, SoTrang; (2) các hồ sơ của trang. Trang vượt giới hạn được đưa về trang cuối. Giá sắp xếp ổn định theo Id khi bằng nhau. Tìm kiếm tên/giống là chuỗi literal không phân biệt hoa thường/dấu, không diễn giải %, _ hoặc [ thành wildcard.
 
 Seed là dữ liệu demo, thông tin sức khỏe chưa được xác minh. Xem nguồn ảnh tại `docs/catalog-assets.md` và cấu hình kết nối trong README gốc.
+
+## Tài khoản demo cho quản trị
+
+Trên LocalDB của đồ án, đăng ký một tài khoản qua `/DangKy.aspx` bằng email demo và mật khẩu tự đặt. Sau đó đổi vai trò của đúng tài khoản bằng truy vấn sau. Thay email bằng địa chỉ đã đăng ký và chọn `admin` hoặc `staff`.
+
+```sql
+USE PetDream;
+DECLARE @Email nvarchar(254) = N'demo@example.test';
+DECLARE @VaiTro varchar(10) = 'staff';
+
+UPDATE dbo.TAI_KHOAN
+SET VaiTro = @VaiTro, PhienBanXacThuc = PhienBanXacThuc + 1
+WHERE Email = @Email AND HoatDong = 1 AND DaXoa = 0 AND VaiTro <> @VaiTro;
+
+SELECT Id, Email, VaiTro FROM dbo.TAI_KHOAN WHERE Email = @Email;
+```
+
+Đăng nhập lại và mở `/Admin/Default.aspx` qua HTTPS. Đăng ký trên website luôn tạo vai trò `khach`. Việc đổi quyền/khóa tài khoản qua UI thuộc F06.

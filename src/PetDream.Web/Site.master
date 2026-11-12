@@ -16,9 +16,17 @@
         </asp:ScriptManager>
         <header class="site-header">
             <a class="brand" href="<%= ResolveUrl("~/Default.aspx") %>">PetDream<span>Thế giới thú cưng đáng yêu</span></a>
-            <nav aria-label="Điều hướng chính">
+            <nav class="account-nav" aria-label="Điều hướng chính">
                 <a href="<%= ResolveUrl("~/Default.aspx") %>">Trang chủ</a>
                 <a href="<%= ResolveUrl("~/ThuCung.aspx") %>">Thú cưng <span aria-hidden="true">↗</span></a>
+                <% if (XacThucTaiKhoan.HienTai(Context) == null) { %>
+                    <a href="<%= ResolveUrl("~/DangNhap.aspx") %>">Đăng nhập</a>
+                <% } else { %>
+                    <a href="<%= ResolveUrl("~/TaiKhoan.aspx") %>">Tài khoản</a>
+                    <% if (XacThucTaiKhoan.LaQuanTri(XacThucTaiKhoan.HienTai(Context))) { %>
+                        <a href="<%= ResolveUrl("~/Admin/Default.aspx") %>">Quản trị</a>
+                    <% } %>
+                <% } %>
             </nav>
         </header>
         <main id="noi-dung" class="container">
