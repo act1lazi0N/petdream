@@ -9,11 +9,12 @@ Phong cách giao diện hồng/tím pastel, lấy cảm hứng từ mẫu PetDre
 - Trang chủ, danh mục và chi tiết thú cưng responsive, đọc dữ liệu SQL Server qua ADO.NET/stored procedure.
 - Tìm tên/giống không phân biệt hoa thường hoặc dấu tiếng Việt; lọc loài, giới tính, khoảng giá; sắp xếp và phân trang 10 hồ sơ.
 - Schema, procedure và seed chạy lại được: 3 loài, 30 hồ sơ, 30 ảnh minh họa trong 3 tệp local.
-- Master Page khách/quản trị và trang khung quản trị; cấu hình LocalDB mẫu không chứa mật khẩu.
+- Đăng ký, đăng nhập bằng email hoặc số điện thoại, sửa hồ sơ, đổi mật khẩu và đăng xuất.
+- Khu vực quản trị kiểm tra vai trò admin/staff phía máy chủ.
 - Dependency cố định phiên bản, restore bằng NuGet trong IDE; JavaScript được phục vụ local.
 - Quy ước mã nguồn, thư mục database và tài liệu kiến trúc.
 
-Chưa có đăng nhập, quản trị CRUD, giỏ hàng, đặt hàng hoặc đánh giá. Hồ sơ và ảnh AI là dữ liệu minh họa cho đồ án.
+Quản trị CRUD, giỏ hàng, đặt hàng và đánh giá thuộc các gói tiếp theo. Hồ sơ và ảnh AI là dữ liệu minh họa cho đồ án.
 
 ## Chạy bằng Visual Studio
 
@@ -21,11 +22,16 @@ Yêu cầu Windows, Visual Studio với workload **ASP.NET and web development**
 
 1. Mở `PetDream.sln`.
 2. Chuột phải solution → **Restore NuGet Packages**. Cần Internet cho lần tải package đầu tiên.
-3. Mở SSMS hoặc SQL Server Object Explorer trong Visual Studio, kết nối `(localdb)\MSSQLLocalDB` bằng Windows Authentication. Chạy lần lượt ba file SQL theo [hướng dẫn database](database/README.md).
+3. Mở SSMS hoặc SQL Server Object Explorer trong Visual Studio, kết nối `(localdb)\MSSQLLocalDB` bằng Windows Authentication. Chạy SQL theo thứ tự 001–005. Nếu đã chạy catalog 001–003, chạy tiếp 004 và 005. [Hướng dẫn database](database/README.md).
 4. Chọn `PetDream.Web` làm **StartUp Project**, chọn `Default.aspx` làm **Start Page** nếu IDE chưa chọn sẵn.
-5. Chọn **Build Solution**, rồi nhấn **F5** hoặc **Ctrl+F5** để chạy với IIS Express.
+5. Bật SSL cho `PetDream.Web` trong IIS Express. Nếu Visual Studio chưa sinh URL HTTPS, dừng debug rồi thêm binding bên dưới vào `<bindings>` của site `PetDream.Web` trong `.vs/PetDream/config/applicationhost.config`. Chọn một cổng trống trong dải 44300–44399. [Hướng dẫn SSL của IIS Express](https://learn.microsoft.com/iis/extensions/using-iis-express/running-iis-express-without-administrative-privileges).
+6. Chọn **Build Solution** rồi nhấn **F5** hoặc **Ctrl+F5**. Mở `https://localhost:44387/` theo cổng HTTPS đã cấu hình. Dùng chứng chỉ phát triển của IIS Express cho localhost.
 
-Trang khách: `/Default.aspx`, `/ThuCung.aspx`, `/ChiTietThuCung.aspx?id=1`. Trang khung quản trị: `/Admin/Default.aspx`. Cổng gợi ý là 8088; dùng địa chỉ thực tế IDE mở. Không cần script PowerShell; database được chuẩn bị trong IDE/SSMS trước khi chạy.
+```xml
+<binding protocol="https" bindingInformation="*:44387:localhost" />
+```
+
+Trang catalog có thể mở ở cổng HTTP 8088. Tài khoản và quản trị yêu cầu HTTPS. Mở `/DangKy.aspx` để tạo tài khoản khách, rồi `/DangNhap.aspx` và `/TaiKhoan.aspx`. Để thử `/Admin/Default.aspx`, tạo tài khoản demo theo [hướng dẫn database](database/README.md).
 
 Nếu IDE không tự restore, vào **Tools → Options → NuGet Package Manager → General** và bật hai tùy chọn cho phép tải package còn thiếu và tự kiểm tra package khi build.
 
@@ -33,7 +39,7 @@ Nếu IDE không tự restore, vào **Tools → Options → NuGet Package Manage
 
 | Thư viện | Phiên bản | Mục đích |
 | --- | --- | --- |
-| [BCrypt.Net-Next](https://www.nuget.org/packages/BCrypt.Net-Next/4.2.0) | 4.2.0 | Băm và xác minh mật khẩu khi triển khai tài khoản |
+| [BCrypt.Net-Next](https://www.nuget.org/packages/BCrypt.Net-Next/4.2.0) | 4.2.0 | Băm và xác minh mật khẩu tài khoản |
 | [jQuery](https://www.nuget.org/packages/jQuery/3.7.1) | 3.7.1 | Script mapping cho Web Forms unobtrusive validation, nạp local qua hai Master Page |
 
 Các dependency bắc cầu của BCrypt được cố định trong `src/PetDream.Web/packages.config`: System.Buffers 4.6.1, System.Memory 4.6.3, System.Numerics.Vectors 4.6.1, System.Runtime.CompilerServices.Unsafe 6.1.2. ADO.NET và các control/validator Web Forms có sẵn trong .NET Framework.
@@ -78,7 +84,7 @@ src/PetDream.Web/
   Default.aspx
   Web.config
   packages.config
-database/                # Schema, stored procedure và seed catalog
+database/                # Schema và stored procedure cho catalog/tài khoản, seed catalog
 docs/architecture.md
 ```
 
