@@ -1,6 +1,6 @@
 # Kế hoạch xây dựng PetDream
 
-Ngày cập nhật: 11/11/2026. Tài liệu được chỉnh sửa/commit trên `develop`, các nhánh feature đồng bộ về để làm việc; không đưa vào `main`.
+Ngày cập nhật 12/11/2026. Tài liệu được chỉnh sửa và commit trên `develop`. Các nhánh feature đồng bộ từ `develop`. `main` dùng kiểm tra `main-no-plans`.
 
 ## 1. Mục tiêu và các quyết định đã chốt
 
@@ -31,7 +31,7 @@ Nguồn yêu cầu đã đọc: tài liệu “Các chức năng phát triển�
 - [x] Khung đã build bằng Visual Studio; dependency đã được kiểm tra trên .NET Framework và IIS Express.
 - [x] Schema catalog, 3 stored procedure, seed 30 hồ sơ/3 loài và ảnh local: đã triển khai trên `features/pet-catalog`.
 - [x] Kết nối LocalDB thật, trang chủ, tìm/lọc/phân trang và chi tiết: đã kiểm tra trên nhánh feature.
-- [ ] Đưa code catalog vào `develop` qua PR sau review. Cập nhật plan không đồng nghĩa code feature đã được merge.
+- [x] Catalog đã merge vào `develop` qua PR #1, merge commit `2dc29c4`.
 
 Các commit nền tảng: `c4eaa2c` (khung), `c924c27` (dependency), `22688fa` (quy trình IDE). Đây là trạng thái ban đầu của kế hoạch; kết quả build khung không chứng minh chức năng hoặc database đã hoàn thành.
 
@@ -143,8 +143,8 @@ Chia theo gói công việc để mỗi nhánh có đầu ra độc lập, có t
 
 | Mã | Nhánh | Phụ trách theo vai trò | Công việc và đầu ra | Phụ thuộc / trạng thái |
 | --- | --- | --- | --- | --- |
-| F01 | `features/pet-catalog` | Catalog + nền dữ liệu | Schema 3 bảng, seed 30 bé, asset, trang chủ/danh sách/chi tiết, bộ lọc, phân trang, xử lý lỗi | Đã triển khai và kiểm tra ở `1777ada`; chờ review/merge vào develop |
-| F02 | `features/accounts-auth` | Tài khoản + bảo mật | TAI_KHOAN; đăng ký, đăng nhập bằng email/điện thoại, đăng xuất, hồ sơ, đổi mật khẩu; BCrypt, phiên, khóa tài khoản, role guard admin/staff, CSRF cho thao tác ghi | Sau F01; là nền xác thực cho các module quản trị |
+| F01 | `features/pet-catalog` | Catalog + nền dữ liệu | Schema 3 bảng, seed 30 bé, asset, trang chủ/danh sách/chi tiết, bộ lọc, phân trang, xử lý lỗi | Đã kiểm tra và merge vào develop qua PR #1 |
+| F02 | `features/accounts-auth` | Tài khoản + bảo mật | TAI_KHOAN, đăng ký, đăng nhập bằng email/điện thoại, đăng xuất, hồ sơ, đổi mật khẩu, BCrypt, phiên, khóa tài khoản, role guard admin/staff, CSRF cho thao tác ghi | Đủ phụ thuộc F01, xem kế hoạch ở mục 5.5 |
 | F03 | `features/session-cart` | Giỏ hàng khách | Giỏ Session, thêm/xóa mỗi bé một lần, quantity luôn 1, kiểm tra trạng thái hiển thị, giữ giỏ qua đăng nhập; tổng tiền dự kiến | Sau F01; tích hợp bước đăng nhập khi F02 sẵn sàng |
 | F04 | `features/cod-orders` | Đơn hàng + giao dịch SQL | DON_HANG/CHI_TIET_DON_HANG; checkout COD, phí 30.000đ, snapshot tên/giá, transaction giữ chỗ, mã chống gửi lặp, lịch sử/chi tiết/hủy đơn của khách | Sau F02 + F03; cung cấp nghiệp vụ đơn dùng chung cho quản trị |
 | F05 | `features/admin-catalog` | Quản trị loài/thú cưng | GridView và form thêm/sửa/xóa mềm/ẩn; upload ảnh có kiểm tra; phân quyền admin/staff; ràng buộc danh mục và hồ sơ trong đơn | Sau F01 + F02 + F04; không cho sửa trạng thái để né giữ chỗ/bán |
@@ -165,6 +165,42 @@ Thứ tự nhận việc: F01 → F02/F03/F09 → F04/F06 → F05/F07 → F08 �
 - F04 sở hữu giao dịch đặt/hủy/chuyển trạng thái và quy tắc snapshot giá. F07 gọi lại hợp đồng này; F05 không tự sửa `giu_cho`/`da_ban` ngoài nghiệp vụ đơn.
 - Khi F05 hỗ trợ ảnh upload thật, mở rộng ANH_THU_CUNG/helper render hiện dùng sprite; giữ tương thích 30 ảnh demo và chặn đường dẫn/định dạng không hợp lệ.
 - Bàn giao mỗi feature: code + SQL/asset cần thiết + hướng dẫn IDE + kết quả kiểm tra. Build phải đạt; kiểm thử trường hợp thành công, đầu vào sai, lỗi dữ liệu và phân quyền nếu có. PR mô tả phạm vi, dependency, cách kiểm tra và phần chưa làm.
+
+### 5.5 Kế hoạch triển khai F02 · Tài khoản và xác thực
+
+Nhánh `features/accounts-auth` bắt đầu từ `develop` sau PR #1. F02 cung cấp tài khoản khách và xác thực cho quản trị. Giỏ Session, checkout và quản trị tài khoản lần lượt thuộc F03, F04 và F06.
+
+Ở commit `2dc29c4`, `Web.config` dùng .NET Framework 4.8, `Global.asax.cs` đã có điểm khởi động ứng dụng và hai master đã có server form. `DAO_CoSo` cấp SqlConnection, `DAO_THU_CUNG` là mẫu ADO.NET gọi procedure có tham số, `packages.config` đã có BCrypt.Net-Next 4.2.0. Các nhận định dựa trên đọc mã trực tiếp vì PetDream chưa có chỉ mục GitNexus.
+
+#### Thiết kế và phạm vi
+
+- `database/004_accounts_schema.sql` thêm `TAI_KHOAN` với Id, họ tên, email chuẩn hóa, điện thoại chuẩn hóa, mật khẩu băm, vai trò `khach`/`staff`/`admin`, trạng thái và phiên bản xác thực. Dùng UNIQUE riêng cho email và điện thoại. Chuẩn hóa email bằng trim/lower invariant, điện thoại lưu chuỗi số với quy tắc VN nhất quán cho đăng ký, đăng nhập và cập nhật. Dùng email tối đa 254 ký tự và điện thoại Việt Nam ở dạng 0 + 9 chữ số. Chấp nhận đầu vào +84 tương đương và lưu cùng một dạng.
+- `database/005_accounts_procedures.sql` thêm đăng ký khách, tra thông tin xác thực theo email hoặc điện thoại, đọc danh tính hiện hành theo Id, cập nhật hồ sơ và đổi mật khẩu. Đăng ký gán vai trò khách trong SQL. Cập nhật dựa trên Id phía server và phiên bản hiện hành, xử lý trùng từ constraint. Đổi mật khẩu xác minh mật khẩu cũ rồi cập nhật hash và tăng phiên bản trong cùng thao tác có điều kiện. `006` dành cho dữ liệu demo nếu cần, tạo theo hướng dẫn local với mật khẩu người chạy tự đặt.
+- Thêm `DAO_TAI_KHOAN` theo mẫu DAO hiện có và dịch vụ xác thực dùng `EnhancedHashPassword`/`EnhancedVerify`. Giữ nguyên nội dung mật khẩu khi so khớp, kiểm tra độ dài trước khi băm và không đưa hash vào model hiển thị. Đăng nhập sai trả thông báo chung. Giới hạn thử đăng nhập theo tài khoản và nguồn, áp dụng ngưỡng tạm thời và kiểm tra trường hợp tài khoản không tồn tại.
+- Thêm các trang `DangKy.aspx`, `DangNhap.aspx`, `TaiKhoan.aspx`, `DoiMatKhau.aspx` và thao tác đăng xuất POST trong master. Dùng validator Web Forms và xác nhận lại dữ liệu ở server. Tất cả thao tác ghi, kể cả đăng nhập và đăng xuất, kiểm tra token CSRF gắn với phiên. Tạo token mới khi danh tính thay đổi. Mặc định điều hướng về đích nội bộ cố định, dùng danh sách đích cho phép nếu cần quay lại checkout.
+- Cấu hình Forms Authentication cho Web Forms với cookie HttpOnly, Secure qua HTTPS IIS Express, SameSite Lax, thời hạn cố định đề xuất 30 phút, không ghi nhớ mặc định. Ticket chỉ mang Id và phiên bản xác thực. Nạp lại tài khoản trong pipeline trước phân quyền, gắn principal từ vai trò SQL và kiểm tra phiên bản. Hủy ticket nếu tài khoản bị khóa, bị xóa hoặc phiên bản đã đổi. Khi SQL lỗi, route yêu cầu quyền trả 503 với thông báo chung. Đăng xuất xóa cookie của trình duyệt hiện tại. Đổi mật khẩu buộc đăng nhập lại và vô hiệu hóa các ticket cũ.
+- Bảo vệ cả thư mục Admin trước khi chạy page handler, dùng principal đã xác minh. Phân biệt khách chưa đăng nhập cần chuyển đến trang đăng nhập và tài khoản đã đăng nhập thiếu quyền cần trả 403. Công bố hợp đồng lấy Id tài khoản hiện tại và guard dùng chung để F04/F06 dùng lại.
+- Tham chiếu System.Web cho cấu hình cookie và pipeline. [SameSite trên ASP.NET 4.8](https://learn.microsoft.com/aspnet/samesite/system-web-samesite), [FormsAuthentication.RequireSSL](https://learn.microsoft.com/dotnet/api/system.web.security.formsauthentication.requiressl), [ASP.NET Security Overview](https://learn.microsoft.com/en-us/troubleshoot/developer/webapps/aspnet/development/security-overview).
+
+#### Thứ tự triển khai
+
+1. Từ `develop` đã đồng bộ, tạo `features/accounts-auth`. Chốt chuẩn hóa đầu vào, mã trạng thái SQL và vòng đời ticket rồi triển khai migration/DAO.
+2. Viết đăng ký, đăng nhập và tra principal trên mỗi request. Chạy trang công khai và kiểm tra IIS Express HTTPS trước khi gắn guard quản trị.
+3. Thêm sửa hồ sơ, đổi mật khẩu, đăng xuất và guard. Dùng Id hiện hành trên server khi ghi. Kiểm tra hai trình duyệt để xác nhận ticket cũ bị từ chối sau đổi mật khẩu hoặc khóa.
+4. Cập nhật hướng dẫn SQL/Visual Studio, kiểm tra catalog và mở PR về `develop` sau khi đạt các ca kiểm thử bên dưới.
+
+#### Kiểm thử trước PR
+
+| Luồng | Kết quả cần kiểm tra |
+| --- | --- |
+| Đăng ký hợp lệ, trùng email/số điện thoại, hai request đồng thời | Chỉ một bản ghi hợp lệ, vai trò khách, mật khẩu đã băm, thông báo dễ hiểu |
+| Đăng nhập bằng email và điện thoại, sai mật khẩu, tài khoản khóa, thử lặp | Đúng thì cấp cookie qua HTTPS, lỗi thì thông báo chung, giới hạn thử áp dụng |
+| Hồ sơ và đổi mật khẩu | Chỉ sửa tài khoản hiện hành, dữ liệu trùng được xử lý, mật khẩu cũ và ticket cũ mất hiệu lực |
+| Phiên và CSRF | Thiếu/sai token bị từ chối, logout GET không ghi, ticket hết hạn yêu cầu đăng nhập lại |
+| Truy cập trực tiếp quản trị | Khách chưa đăng nhập được chuyển đến đăng nhập, khách đã đăng nhập nhận 403, admin/staff đúng quyền, SQL lỗi trả 503 |
+| Hồi quy catalog | Trang chủ, danh mục, chi tiết và filter postback vẫn hoạt động khi ẩn danh và sau đăng nhập |
+
+Trước khi mở PR, xác minh binding HTTPS của IIS Express và quy trình F5 trong Visual Studio. Chạy migration hai lần trên LocalDB đã có catalog và ghi kết quả kiểm thử thực tế vào PR. Bộ dữ liệu demo có thể được tạo cục bộ khi cần kiểm tra ba vai trò.
 
 ## 6. Kiểm thử và tiêu chí bàn giao
 
