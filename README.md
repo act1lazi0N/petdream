@@ -10,11 +10,12 @@ Phong cách giao diện hồng/tím pastel, lấy cảm hứng từ mẫu PetDre
 - Tìm tên/giống không phân biệt hoa thường hoặc dấu tiếng Việt; lọc loài, giới tính, khoảng giá; sắp xếp và phân trang 10 hồ sơ.
 - Schema, procedure và seed chạy lại được: 3 loài, 30 hồ sơ, 30 ảnh minh họa trong 3 tệp local.
 - Đăng ký, đăng nhập bằng email hoặc số điện thoại, sửa hồ sơ, đổi mật khẩu và đăng xuất.
+- Giỏ hàng theo phiên, thêm/xóa từ website và giữ giỏ khi đăng nhập. Tạm tính dựa trên giá hiện tại của các bé đang tìm chủ.
 - Khu vực quản trị kiểm tra vai trò admin/staff phía máy chủ.
 - Dependency cố định phiên bản, restore bằng NuGet trong IDE; JavaScript được phục vụ local.
 - Quy ước mã nguồn, thư mục database và tài liệu kiến trúc.
 
-Quản trị CRUD, giỏ hàng, đặt hàng và đánh giá thuộc các gói tiếp theo. Hồ sơ và ảnh AI là dữ liệu minh họa cho đồ án.
+Quản trị CRUD, đặt hàng và đánh giá thuộc các gói tiếp theo. Hồ sơ và ảnh AI là dữ liệu minh họa cho đồ án.
 
 ## Chạy bằng Visual Studio
 
@@ -22,7 +23,7 @@ Yêu cầu Windows, Visual Studio với workload **ASP.NET and web development**
 
 1. Mở `PetDream.sln`.
 2. Chuột phải solution → **Restore NuGet Packages**. Cần Internet cho lần tải package đầu tiên.
-3. Mở SSMS hoặc SQL Server Object Explorer trong Visual Studio, kết nối `(localdb)\MSSQLLocalDB` bằng Windows Authentication. Chạy SQL theo thứ tự 001–005. Nếu đã chạy catalog 001–003, chạy tiếp 004 và 005. [Hướng dẫn database](database/README.md).
+3. Mở SSMS hoặc SQL Server Object Explorer trong Visual Studio, kết nối `(localdb)\MSSQLLocalDB` bằng Windows Authentication. Chạy 001–005 và 022. Nếu đã chạy 001–005, chỉ cần chạy 022. [Hướng dẫn database](database/README.md).
 4. Chọn `PetDream.Web` làm **StartUp Project**, chọn `Default.aspx` làm **Start Page** nếu IDE chưa chọn sẵn.
 5. Bật SSL cho `PetDream.Web` trong IIS Express. Nếu Visual Studio chưa sinh URL HTTPS, dừng debug rồi thêm binding bên dưới vào `<bindings>` của site `PetDream.Web` trong `.vs/PetDream/config/applicationhost.config`. Chọn một cổng trống trong dải 44300–44399. [Hướng dẫn SSL của IIS Express](https://learn.microsoft.com/iis/extensions/using-iis-express/running-iis-express-without-administrative-privileges).
 6. Chọn **Build Solution** rồi nhấn **F5** hoặc **Ctrl+F5**. Mở `https://localhost:44387/` theo cổng HTTPS đã cấu hình. Dùng chứng chỉ phát triển của IIS Express cho localhost.
@@ -31,7 +32,7 @@ Yêu cầu Windows, Visual Studio với workload **ASP.NET and web development**
 <binding protocol="https" bindingInformation="*:44387:localhost" />
 ```
 
-Trang catalog có thể mở ở cổng HTTP 8088. Tài khoản và quản trị yêu cầu HTTPS. Mở `/DangKy.aspx` để tạo tài khoản khách, rồi `/DangNhap.aspx` và `/TaiKhoan.aspx`. Để thử `/Admin/Default.aspx`, tạo tài khoản demo theo [hướng dẫn database](database/README.md).
+Trang catalog có thể mở ở cổng HTTP 8088. Tài khoản, giỏ hàng và quản trị yêu cầu HTTPS. Mở một hồ sơ đang tìm chủ, chọn **Thêm vào giỏ**, rồi thử **Đăng nhập** từ giỏ để quay lại đúng giỏ hàng. Mở `/DangKy.aspx` để tạo tài khoản khách. Để thử `/Admin/Default.aspx`, tạo tài khoản demo theo [hướng dẫn database](database/README.md).
 
 Nếu IDE không tự restore, vào **Tools → Options → NuGet Package Manager → General** và bật hai tùy chọn cho phép tải package còn thiếu và tự kiểm tra package khi build.
 
@@ -84,7 +85,7 @@ src/PetDream.Web/
   Default.aspx
   Web.config
   packages.config
-database/                # Schema và stored procedure cho catalog/tài khoản, seed catalog
+database/                # Schema, stored procedure và seed
 docs/architecture.md
 ```
 

@@ -159,7 +159,7 @@ Thứ tự nhận việc: F01 → F02/F03/F09 → F04/F06 → F05/F07 → F08 �
 ### 5.4 Ranh giới sở hữu và bàn giao
 
 - Mỗi feature sở hữu trang/code-behind, DAO, procedure và kiểm thử của mình. Khi cần sửa `Site.master`, `Admin.master`, CSS dùng chung, `Web.config` hoặc DAO chung, ghi rõ trong mô tả PR để tránh ghi đè thay đổi của nhóm khác.
-- SQL mới dùng tiền tố số duy nhất. Giữ `001–003` cho catalog; dành `004–006` cho F02, `007–009` cho F04, `010–012` cho F05, `013–015` cho F06, `016–018` cho F07, `019–021` cho F08. F03/F09 không cần bảng mới. Nếu cần thêm số, cập nhật phân bổ trên develop trước.
+- SQL mới dùng tiền tố số duy nhất. Giữ `001–003` cho catalog; dành `004–006` cho F02, `007–009` cho F04, `010–012` cho F05, `013–015` cho F06, `016–018` cho F07, `019–021` cho F08, `022` cho procedure đọc giỏ của F03. F03/F09 không cần bảng mới. Nếu cần thêm số, cập nhật phân bổ trên develop trước.
 - Không sửa schema/seed cũ để xóa dữ liệu đã có. Thay đổi tiếp theo dùng migration tăng dần, chạy lại an toàn, ghi thứ tự chạy trong database/README. Procedure có thể CREATE OR ALTER; không reset đơn/trạng thái khi seed lại.
 - F02 công bố cách lấy người dùng hiện tại, kiểm tra vai trò và kiểm tra CSRF. Mọi trang quản trị dùng cùng guard phía server trước khi đọc/ghi dữ liệu; ẩn link menu không thay thế phân quyền.
 - F04 sở hữu giao dịch đặt/hủy/chuyển trạng thái và quy tắc snapshot giá. F07 gọi lại hợp đồng này; F05 không tự sửa `giu_cho`/`da_ban` ngoài nghiệp vụ đơn.

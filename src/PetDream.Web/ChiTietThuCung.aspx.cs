@@ -3,15 +3,20 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
-using System.Web.UI;
+using System.Web;
 
-public partial class ChiTietThuCung : Page
+public partial class ChiTietThuCung : TrangCoCsrf
 {
+    protected override bool BaoVeBieuMau
+    {
+        get { return Request.IsSecureConnection; }
+    }
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (IsPostBack) return;
         int id;
-        if (!int.TryParse(Request.QueryString["id"], NumberStyles.None, CultureInfo.InvariantCulture, out id) || id < 1)
+        if (!DocId(out id))
         {
             BaoLoi(404, "Hồ sơ bạn tìm không tồn tại hoặc không còn được giới thiệu.");
             return;
@@ -25,6 +30,7 @@ public partial class ChiTietThuCung : Page
                 return;
             }
             DataRow pet = duLieu.Tables[0].Rows[0];
+            btn_themgio.Visible = Request.IsSecureConnection && DangBan(pet);
             Title = Convert.ToString(pet["Ten"]) + " | PetDream";
             lit_breadcrumb.Text = lit_ten.Text = Convert.ToString(pet["Ten"]);
             lit_giong.Text = Convert.ToString(pet["Giong"]);
@@ -58,6 +64,44 @@ public partial class ChiTietThuCung : Page
         }
         catch (SqlException ex) { LoiDuLieu(ex); }
         catch (ConfigurationErrorsException ex) { LoiDuLieu(ex); }
+    }
+
+    protected void btn_themgio_Click(object sender, EventArgs e)
+    {
+        if (!Request.IsSecureConnection || Request.HttpMethod != "POST")
+            throw new HttpException(403, "Vui lòng mở trang bằng HTTPS để thêm vào giỏ.");
+
+        int id;
+        if (!DocId(out id))
+        {
+            BaoLoi(404, "Hồ sơ bạn tìm không tồn tại hoặc không còn được giới thiệu.");
+            return;
+        }
+
+        try
+        {
+            DataTable ketQua = new DAO_THU_CUNG().DocGioHang(new[] { id });
+            if (ketQua.Rows.Count == 0 || !DangBan(ketQua.Rows[0]))
+            {
+                ChuyenTrang("~/GioHang.aspx?them=khongcon");
+                return;
+            }
+
+            GioHangPhien.Them(Session, id);
+            ChuyenTrang("~/GioHang.aspx?them=1");
+        }
+        catch (SqlException ex) { LoiDuLieu(ex); }
+        catch (ConfigurationErrorsException ex) { LoiDuLieu(ex); }
+    }
+
+    private bool DocId(out int id)
+    {
+        return int.TryParse(Request.QueryString["id"], NumberStyles.None, CultureInfo.InvariantCulture, out id) && id > 0;
+    }
+
+    private static bool DangBan(DataRow pet)
+    {
+        return Convert.ToString(pet["TrangThai"]) == "dang_ban";
     }
 
     private void LoiDuLieu(Exception ex)

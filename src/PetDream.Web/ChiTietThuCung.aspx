@@ -98,7 +98,11 @@
                 <p class="preserve-lines">
                     <asp:Literal ID="lit_mota" runat="server" Mode="Encode" />
                 </p>
-                <asp:HyperLink ID="lnk_loai" runat="server" CssClass="button button-light" Text="Gặp những người bạn cùng loài ↗" />
+                <div class="detail-actions">
+                    <asp:Button ID="btn_themgio" runat="server" CssClass="button" Text="Thêm vào giỏ"
+                        CausesValidation="false" OnClick="btn_themgio_Click" />
+                    <asp:HyperLink ID="lnk_loai" runat="server" CssClass="button button-light" Text="Gặp những người bạn cùng loài ↗" />
+                </div>
             </div>
         </div>
         <section class="detail-notes" aria-label="Thông tin chăm sóc">

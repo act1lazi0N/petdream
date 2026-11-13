@@ -42,6 +42,12 @@ public partial class UngDung : HttpApplication
         bool trangXacThuc = canTaiKhoan || LaTrang(trang, "DangNhap") || LaTrang(trang, "DangKy");
         DanhTinhTaiKhoan taiKhoan = XacThucTaiKhoan.HienTai(Context);
 
+        if (LaTrang(trang, "GioHang") && !Request.IsSecureConnection)
+        {
+            TraLoi(403, "Vui lòng mở PetDream bằng địa chỉ HTTPS của IIS Express để sử dụng giỏ hàng.");
+            return;
+        }
+
         if (trangXacThuc || taiKhoan != null)
             Response.Cache.SetNoStore();
 

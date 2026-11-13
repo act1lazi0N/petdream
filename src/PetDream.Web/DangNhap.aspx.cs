@@ -39,7 +39,18 @@ public partial class DangNhap : TrangTaiKhoan
                 return;
             }
 
-            ChuyenTrang(Request.QueryString["tiep"] == "quantri" ? "~/Admin/Default.aspx" : "~/TaiKhoan.aspx");
+            switch (Request.QueryString["tiep"])
+            {
+                case "quantri":
+                    ChuyenTrang("~/Admin/Default.aspx");
+                    break;
+                case "giohang":
+                    ChuyenTrang("~/GioHang.aspx");
+                    break;
+                default:
+                    ChuyenTrang("~/TaiKhoan.aspx");
+                    break;
+            }
         });
     }
 }
