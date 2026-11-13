@@ -11,6 +11,7 @@ Kết nối `(localdb)\MSSQLLocalDB` bằng Windows Authentication trong **SQL S
 7. `007_orders_schema.sql`: tạo bảng DON_HANG và CHI_TIET_DON_HANG, lưu bản chụp tên/giá từng bé lúc đặt.
 8. `008_orders_procedures.sql`: tạo/cập nhật procedure đặt đơn COD, chuyển trạng thái/hủy đơn, lịch sử và chi tiết đơn của khách.
 9. `010_admin_catalog_procedures.sql`: tạo/cập nhật procedure quản lý loài và thú cưng, kiểm tra quyền và ràng buộc với đơn hàng.
+10. `013_admin_accounts_procedures.sql`: tạo/cập nhật procedure quản trị tài khoản; kiểm tra quyền admin, bảo vệ admin hoạt động cuối và cập nhật phiên bản xác thực khi đổi quyền hoặc trạng thái.
 
 Mỗi file chứa `GO`, chạy bằng cửa sổ SQL Query. Không cần script PowerShell hoặc thao tác tự động lúc website khởi động. Nếu IDE hỏi encoding, chọn UTF-8 để giữ đúng tiếng Việt.
 
@@ -48,6 +49,6 @@ WHERE Email = @Email AND HoatDong = 1 AND DaXoa = 0 AND VaiTro <> @VaiTro;
 SELECT Id, Email, VaiTro FROM dbo.TAI_KHOAN WHERE Email = @Email;
 ```
 
-Đăng nhập lại và mở `/Admin/Default.aspx` qua HTTPS. Đăng ký trên website luôn tạo vai trò `khach`. Việc đổi quyền/khóa tài khoản qua UI thuộc F06.
+Đăng nhập lại và mở `/Admin/TaiKhoan.aspx` qua HTTPS để quản lý tài khoản. Đăng ký trên website luôn tạo vai trò `khach`. Chỉ admin được vào module tài khoản; khi đổi quyền, khóa, mở khóa hoặc xóa mềm, phiên cũ của tài khoản bị vô hiệu hóa. Không thể khóa, xóa hoặc hạ quyền admin hoạt động cuối cùng.
 
 Để kiểm tra F05, mở `/Admin/Loai.aspx` hoặc `/Admin/ThuCung.aspx`. Admin được quản lý loài và hồ sơ; staff được xem loài và thêm, sửa, ngừng giới thiệu thú cưng. Chỉ admin được xóa mềm hồ sơ. Không thể xóa loài còn hồ sơ hoặc xóa hồ sơ đang trong đơn hoạt động; trạng thái giữ chỗ và đã bán do đơn hàng quản lý.

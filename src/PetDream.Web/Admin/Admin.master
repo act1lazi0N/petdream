@@ -7,6 +7,7 @@
     <title>PetDream | Quản trị</title>
     <link href="~/Content/site.css" rel="stylesheet" runat="server" />
     <link href="~/Content/admin-catalog.css" rel="stylesheet" runat="server" />
+    <link href="~/Content/admin-accounts.css" rel="stylesheet" runat="server" />
 </head>
 <body>
     <form id="form_quantri" runat="server">
@@ -18,6 +19,9 @@
             <nav class="account-nav" aria-label="Điều hướng tài khoản">
                 <a href="<%= ResolveUrl("~/Admin/Loai.aspx") %>">Loài</a>
                 <a href="<%= ResolveUrl("~/Admin/ThuCung.aspx") %>">Thú cưng</a>
+                <% if (XacThucTaiKhoan.HienTai(Context) != null && XacThucTaiKhoan.HienTai(Context).VaiTro == "admin") { %>
+                <a href="<%= ResolveUrl("~/Admin/TaiKhoan.aspx") %>">Tài khoản</a>
+                <% } %>
                 <a href="<%= ResolveUrl("~/Default.aspx") %>">Trang chủ</a>
                 <a href="<%= ResolveUrl("~/DangXuat.aspx") %>">Đăng xuất</a>
             </nav>
