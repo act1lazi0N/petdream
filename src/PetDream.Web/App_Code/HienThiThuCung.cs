@@ -28,6 +28,13 @@ public static class HienThiThuCung
     public static string Anh(object duongDan, object oAnh)
     {
         string path = Convert.ToString(duongDan);
+        Match upload = Regex.Match(path, @"\A~/App_Data/Uploads/([0-9a-f]{32})\.png\z");
+        if (upload.Success)
+        {
+            string uploadUrl = VirtualPathUtility.ToAbsolute("~/AnhTaiLen.ashx") + "?ma=" + upload.Groups[1].Value;
+            return "background-image:url('" + HttpUtility.HtmlAttributeEncode(uploadUrl)
+                + "');background-size:cover;background-position:center";
+        }
         if (!Regex.IsMatch(path, @"^~/Images/pets/(dogs|cats|hamsters)\.png$"))
             return "background-image:none";
         int o = oAnh == DBNull.Value ? 0 : Convert.ToInt32(oAnh);
