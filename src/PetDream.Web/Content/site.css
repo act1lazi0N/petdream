@@ -127,7 +127,7 @@ input:focus-visible,select:focus-visible,button:focus-visible { outline:3px soli
 .pet-facts { display:grid; grid-template-columns:1fr 1fr; gap:20px; padding:22px 0; border-block:1px solid var(--border); }
 .pet-facts dt { font-size:12px; color:var(--muted); }
 .pet-facts dd { margin:4px 0 0; font-weight:600; }
-.detail-copy>.button { margin-top:18px; }
+.detail-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:18px; }
 .detail-notes { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:32px; }
 .detail-notes article { background:#f5eef8; border-radius:22px; padding:28px; }
 .detail-notes article+article { background:#fbefed; }
@@ -243,4 +243,26 @@ input:focus-visible,select:focus-visible,button:focus-visible { outline:3px soli
 }
 @media (max-width: 430px) {
     .site-header .account-nav { column-gap: 12px; }
+}
+
+.cart { max-width:860px; margin:32px auto 0; }
+.cart h1 { margin-bottom:16px; }
+.cart-message:not(:empty) { margin-bottom:16px; color:var(--primary); }
+.cart-items { display:grid; gap:12px; list-style:none; margin:0; padding:0; }
+.cart-item { display:grid; grid-template-columns:72px minmax(0,1fr) auto auto; align-items:center; gap:16px; padding:14px; background:#fff; border:1px solid var(--border); border-radius:18px; }
+.cart-photo { width:72px; height:72px; border-radius:12px; }
+.cart-item-copy { font-weight:600; overflow-wrap:anywhere; }
+.cart-item-copy p { margin:4px 0 0; font-size:14px; font-weight:400; }
+.cart-price { color:var(--primary); }
+.cart-remove { padding-inline:16px; }
+.cart-summary { margin-top:20px; text-align:right; }
+.cart-summary strong { margin-left:12px; color:var(--primary); font-size:22px; }
+.cart-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:12px; }
+
+@media (max-width: 480px) {
+    .cart-item { grid-template-columns:52px minmax(0,1fr) auto; gap:8px 12px; }
+    .cart-photo { width:52px; height:52px; }
+    .cart-item-copy { grid-column:2 / -1; }
+    .cart-price { grid-column:2; }
+    .cart-remove { grid-column:3; }
 }

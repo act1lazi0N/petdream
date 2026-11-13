@@ -7,6 +7,7 @@ Kết nối `(localdb)\MSSQLLocalDB` bằng Windows Authentication trong **SQL S
 3. `003_catalog_seed.sql`: thêm 10 chó, 10 mèo, 10 hamster cùng ảnh minh họa.
 4. `004_accounts_schema.sql`: tạo bảng TAI_KHOAN và ràng buộc email, điện thoại, vai trò.
 5. `005_accounts_procedures.sql`: tạo/cập nhật procedure đăng ký, tra danh tính, sửa hồ sơ và đổi mật khẩu.
+6. `022_session_cart_procedures.sql`: đọc tên, giá, trạng thái và ảnh theo các ID trong giỏ. Giỏ lưu trong Session và không thêm bảng.
 
 Mỗi file chứa `GO`, chạy bằng cửa sổ SQL Query. Không cần script PowerShell hoặc thao tác tự động lúc website khởi động. Nếu IDE hỏi encoding, chọn UTF-8 để giữ đúng tiếng Việt.
 
