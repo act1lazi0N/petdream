@@ -3,10 +3,12 @@
 .admin-accounts-heading h1 { font-size: clamp(32px, 5vw, 48px); margin: 0; }
 .admin-accounts-heading p { margin: 8px 0; }
 .admin-table-wrap { max-width: 100%; overflow-x: auto; background: white; border: 1px solid var(--border); border-radius: 20px; }
-.admin-table { width: 100%; border-collapse: collapse; text-align: left; }
+.admin-table { width: 100%; min-width: 760px; border-collapse: collapse; text-align: left; }
 .admin-table th, .admin-table td { padding: 14px 16px; border-bottom: 1px solid var(--border); vertical-align: top; overflow-wrap: anywhere; }
 .admin-table th { background: #f5eef8; white-space: nowrap; }
 .admin-table td a { font-weight: 600; }
 .admin-account-form select { width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid #dacee2; border-radius: 10px; background: #fffdfd; color: var(--text); font: inherit; }
 .admin-account-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
 .admin-help { font-size: 13px; color: var(--muted); }
+.admin-table-hint { display: none; font-size: 14px; }
+@media (max-width: 800px) { .admin-table-hint { display: block; } }

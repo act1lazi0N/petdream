@@ -6,7 +6,8 @@
             <a class="button" href="TaiKhoanSua.aspx">Thêm tài khoản</a>
         </div>
         <div class="account-message" role="status"><asp:Literal ID="lit_thongbao" runat="server" Mode="Encode" /></div>
-        <div class="admin-table-wrap">
+        <p class="admin-table-hint">Vuốt ngang hoặc dùng phím mũi tên để xem các cột trong bảng.</p>
+        <div class="admin-table-wrap" role="region" aria-label="Danh sách tài khoản có thể cuộn ngang" tabindex="0">
             <asp:GridView ID="grv_taikhoan" runat="server" CssClass="admin-table" AutoGenerateColumns="false"
                 AllowPaging="true" PageSize="15" OnPageIndexChanging="grv_taikhoan_PageIndexChanging" EmptyDataText="Chưa có tài khoản nào.">
                 <Columns>
