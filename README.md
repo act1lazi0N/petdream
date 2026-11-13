@@ -14,10 +14,11 @@ Phong cách giao diện hồng/tím pastel, lấy cảm hứng từ mẫu PetDre
 - Đặt hàng COD với phí giao 30.000đ: giữ chỗ các bé trong một transaction, chặn gửi lặp, báo khi giá đổi. Khách xem lịch sử, chi tiết và hủy đơn khi còn chờ xác nhận.
 - Trang liên hệ kiểm tra họ tên, email, điện thoại, chủ đề và nội dung rồi báo gửi thành công; bản đồ án không gửi email hay lưu lời nhắn.
 - Khu vực quản trị kiểm tra vai trò admin/staff phía máy chủ.
+- Admin quản lý tài khoản: xem, tạo, sửa, phân quyền, khóa/mở khóa và xóa mềm; bảo vệ admin hoạt động cuối cùng.
 - Dependency cố định phiên bản, restore bằng NuGet trong IDE; JavaScript được phục vụ local.
 - Quy ước mã nguồn, thư mục database và tài liệu kiến trúc.
 
-Quản trị CRUD, xử lý đơn phía quản trị và đánh giá thuộc các gói tiếp theo. Hồ sơ và ảnh AI là dữ liệu minh họa cho đồ án.
+Quản trị loài/thú cưng, xử lý đơn phía quản trị và đánh giá thuộc các gói tiếp theo. Hồ sơ và ảnh AI là dữ liệu minh họa cho đồ án.
 
 ## Chạy bằng Visual Studio
 
@@ -25,7 +26,7 @@ Yêu cầu Windows, Visual Studio với workload **ASP.NET and web development**
 
 1. Mở `PetDream.sln`.
 2. Chuột phải solution → **Restore NuGet Packages**. Cần Internet cho lần tải package đầu tiên.
-3. Mở SSMS hoặc SQL Server Object Explorer trong Visual Studio, kết nối `(localdb)\MSSQLLocalDB` bằng Windows Authentication. Chạy 001–005, 007, 008 và 022. Nếu đã chạy các file trước, chỉ cần chạy tiếp file mới. [Hướng dẫn database](database/README.md).
+3. Mở SSMS hoặc SQL Server Object Explorer trong Visual Studio, kết nối `(localdb)\MSSQLLocalDB` bằng Windows Authentication. Chạy 001–005, 007, 008, 022 và 013. Nếu đã chạy các file trước, chỉ cần chạy tiếp file mới. [Hướng dẫn database](database/README.md).
 4. Chọn `PetDream.Web` làm **StartUp Project**, chọn `Default.aspx` làm **Start Page** nếu IDE chưa chọn sẵn.
 5. Bật SSL cho `PetDream.Web` trong IIS Express. Nếu Visual Studio chưa sinh URL HTTPS, dừng debug rồi thêm binding bên dưới vào `<bindings>` của site `PetDream.Web` trong `.vs/PetDream/config/applicationhost.config`. Chọn một cổng trống trong dải 44300–44399. [Hướng dẫn SSL của IIS Express](https://learn.microsoft.com/iis/extensions/using-iis-express/running-iis-express-without-administrative-privileges).
 6. Chọn **Build Solution** rồi nhấn **F5** hoặc **Ctrl+F5**. Mở `https://localhost:44387/` theo cổng HTTPS đã cấu hình. Dùng chứng chỉ phát triển của IIS Express cho localhost.

@@ -10,6 +10,7 @@ Kết nối `(localdb)\MSSQLLocalDB` bằng Windows Authentication trong **SQL S
 6. `022_session_cart_procedures.sql`: đọc tên, giá, trạng thái và ảnh theo các ID trong giỏ. Giỏ lưu trong Session và không thêm bảng.
 7. `007_orders_schema.sql`: tạo bảng DON_HANG và CHI_TIET_DON_HANG, lưu bản chụp tên/giá từng bé lúc đặt.
 8. `008_orders_procedures.sql`: tạo/cập nhật procedure đặt đơn COD, chuyển trạng thái/hủy đơn, lịch sử và chi tiết đơn của khách.
+9. `013_admin_accounts_procedures.sql`: tạo/cập nhật procedure quản trị tài khoản; kiểm tra quyền admin, bảo vệ admin hoạt động cuối và cập nhật phiên bản xác thực khi đổi quyền hoặc trạng thái.
 
 Mỗi file chứa `GO`, chạy bằng cửa sổ SQL Query. Không cần script PowerShell hoặc thao tác tự động lúc website khởi động. Nếu IDE hỏi encoding, chọn UTF-8 để giữ đúng tiếng Việt.
 
@@ -47,4 +48,4 @@ WHERE Email = @Email AND HoatDong = 1 AND DaXoa = 0 AND VaiTro <> @VaiTro;
 SELECT Id, Email, VaiTro FROM dbo.TAI_KHOAN WHERE Email = @Email;
 ```
 
-Đăng nhập lại và mở `/Admin/Default.aspx` qua HTTPS. Đăng ký trên website luôn tạo vai trò `khach`. Việc đổi quyền/khóa tài khoản qua UI thuộc F06.
+Đăng nhập lại và mở `/Admin/TaiKhoan.aspx` qua HTTPS để quản lý tài khoản. Đăng ký trên website luôn tạo vai trò `khach`. Chỉ admin được vào module tài khoản; khi đổi quyền, khóa, mở khóa hoặc xóa mềm, phiên cũ của tài khoản bị vô hiệu hóa. Không thể khóa, xóa hoặc hạ quyền admin hoạt động cuối cùng.
