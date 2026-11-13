@@ -8,10 +8,12 @@ Kết nối `(localdb)\MSSQLLocalDB` bằng Windows Authentication trong **SQL S
 4. `004_accounts_schema.sql`: tạo bảng TAI_KHOAN và ràng buộc email, điện thoại, vai trò.
 5. `005_accounts_procedures.sql`: tạo/cập nhật procedure đăng ký, tra danh tính, sửa hồ sơ và đổi mật khẩu.
 6. `022_session_cart_procedures.sql`: đọc tên, giá, trạng thái và ảnh theo các ID trong giỏ. Giỏ lưu trong Session và không thêm bảng.
+7. `007_orders_schema.sql`: tạo bảng DON_HANG và CHI_TIET_DON_HANG, lưu bản chụp tên/giá từng bé lúc đặt.
+8. `008_orders_procedures.sql`: tạo/cập nhật procedure đặt đơn COD, chuyển trạng thái/hủy đơn, lịch sử và chi tiết đơn của khách.
 
 Mỗi file chứa `GO`, chạy bằng cửa sổ SQL Query. Không cần script PowerShell hoặc thao tác tự động lúc website khởi động. Nếu IDE hỏi encoding, chọn UTF-8 để giữ đúng tiếng Việt.
 
-Các file có thể chạy lại: schema chỉ tạo bảng còn thiếu, procedure dùng CREATE OR ALTER, seed kiểm tra mã hồ sơ và thứ tự ảnh trước khi thêm. Seed không đặt lại trạng thái hoặc ghi đè nội dung đã chỉnh sửa. Không có DROP DATABASE/TRUNCATE hay dữ liệu đơn hàng trong bộ seed.
+Các file có thể chạy lại: schema chỉ tạo bảng còn thiếu, procedure dùng CREATE OR ALTER, seed kiểm tra mã hồ sơ và thứ tự ảnh trước khi thêm. Seed không đặt lại trạng thái hoặc ghi đè nội dung đã chỉnh sửa. Không có DROP DATABASE/TRUNCATE hay dữ liệu đơn hàng trong bộ seed. Chạy lại 007/008 không xóa đơn đã có.
 
 Kiểm tra:
 

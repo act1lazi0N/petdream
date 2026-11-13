@@ -47,6 +47,12 @@ public partial class DangNhap : TrangTaiKhoan
                 case "giohang":
                     ChuyenTrang("~/GioHang.aspx");
                     break;
+                case "dathang":
+                    ChuyenTrang("~/DatHang.aspx");
+                    break;
+                case "donhang":
+                    ChuyenTrang("~/DonHang.aspx");
+                    break;
                 default:
                     ChuyenTrang("~/TaiKhoan.aspx");
                     break;

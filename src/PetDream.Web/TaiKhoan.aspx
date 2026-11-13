@@ -23,6 +23,7 @@
         </div>
         <asp:Button ID="btn_thuchien" runat="server" CssClass="button" Text="Lưu hồ sơ" OnClick="btn_thuchien_Click" />
         <div class="account-links">
+            <a href="DonHang.aspx">Đơn hàng của tôi</a>
             <a href="DoiMatKhau.aspx">Đổi mật khẩu</a>
             <a href="DangXuat.aspx">Đăng xuất</a>
         </div>
