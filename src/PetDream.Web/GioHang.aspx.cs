@@ -1,6 +1,6 @@
 using System;
 using System.Configuration;
-using System.Data;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
@@ -43,31 +43,17 @@ public partial class GioHang : TrangCoCsrf
 
         try
         {
-            DataTable duLieu = new DAO_THU_CUNG().DocGioHang(ids);
-            var theoId = duLieu.Rows.Cast<DataRow>().ToDictionary(row => (int)row["Id"]);
-            var cacDong = ids.Select(id =>
-            {
-                DataRow be;
-                theoId.TryGetValue(id, out be);
-                bool dangBan = be != null && (string)be["TrangThai"] == "dang_ban";
-                decimal? gia = dangBan ? (decimal?)be["Gia"] : null;
-                return new
-                {
-                    Id = id,
-                    CongKhai = be != null,
-                    Ten = be == null ? "Hồ sơ không còn hiển thị" : (string)be["Ten"],
-                    KieuAnh = be == null ? "" : HienThiThuCung.Anh(be["DuongDan"], be["OAnh"]),
-                    TrangThai = be == null ? "Không còn nhận đặt" : HienThiThuCung.TrangThai(be["TrangThai"]),
-                    Gia = gia.HasValue ? HienThiThuCung.Gia(gia.Value) : "",
-                    Tien = gia
-                };
-            }).ToList();
-
+            List<DongGioHang> cacDong = DongGioHang.Doc(ids);
             rpt_giohang.DataSource = cacDong;
             rpt_giohang.DataBind();
             lit_tong.Text = HienThiThuCung.Gia(cacDong.Sum(dong => dong.Tien ?? 0));
-            pnl_thaydoi.Visible = cacDong.Any(dong => !dong.Tien.HasValue);
-            lnk_dangnhap.Visible = XacThucTaiKhoan.HienTai(Context) == null;
+
+            // Chỉ cho sang bước đặt hàng khi mọi bé trong giỏ còn đang tìm chủ.
+            bool coTheDat = cacDong.All(dong => dong.DangBan);
+            bool daDangNhap = XacThucTaiKhoan.HienTai(Context) != null;
+            pnl_thaydoi.Visible = !coTheDat;
+            lnk_dangnhap.Visible = coTheDat && !daDangNhap;
+            lnk_dathang.Visible = coTheDat && daDangNhap;
             pnl_giohang.Visible = true;
         }
         catch (SqlException ex) { BaoLoiDuLieu(ex); }

@@ -32,12 +32,14 @@
             <div class="cart-summary">
                 <p>Tạm tính <strong><asp:Literal ID="lit_tong" runat="server" Mode="Encode" /></strong></p>
                 <asp:PlaceHolder ID="pnl_thaydoi" runat="server" Visible="false">
-                    <p>Tạm tính chỉ gồm các bé đang tìm chủ.</p>
+                    <p>Tạm tính chỉ gồm các bé đang tìm chủ. Xóa các bé không còn nhận đặt để tiếp tục đặt hàng.</p>
                 </asp:PlaceHolder>
                 <div class="cart-actions">
                     <a class="button button-light" href="ThuCung.aspx">Xem thêm thú cưng</a>
                     <asp:HyperLink ID="lnk_dangnhap" runat="server" CssClass="button"
-                        NavigateUrl="~/DangNhap.aspx?tiep=giohang" Text="Đăng nhập" />
+                        NavigateUrl="~/DangNhap.aspx?tiep=dathang" Text="Đăng nhập để đặt hàng" />
+                    <asp:HyperLink ID="lnk_dathang" runat="server" CssClass="button"
+                        NavigateUrl="~/DatHang.aspx" Text="Đặt hàng" />
                 </div>
             </div>
         </asp:Panel>
