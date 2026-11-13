@@ -10,6 +10,7 @@ Kết nối `(localdb)\MSSQLLocalDB` bằng Windows Authentication trong **SQL S
 6. `022_session_cart_procedures.sql`: đọc tên, giá, trạng thái và ảnh theo các ID trong giỏ. Giỏ lưu trong Session và không thêm bảng.
 7. `007_orders_schema.sql`: tạo bảng DON_HANG và CHI_TIET_DON_HANG, lưu bản chụp tên/giá từng bé lúc đặt.
 8. `008_orders_procedures.sql`: tạo/cập nhật procedure đặt đơn COD, chuyển trạng thái/hủy đơn, lịch sử và chi tiết đơn của khách.
+9. `010_admin_catalog_procedures.sql`: tạo/cập nhật procedure quản lý loài và thú cưng, kiểm tra quyền và ràng buộc với đơn hàng.
 
 Mỗi file chứa `GO`, chạy bằng cửa sổ SQL Query. Không cần script PowerShell hoặc thao tác tự động lúc website khởi động. Nếu IDE hỏi encoding, chọn UTF-8 để giữ đúng tiếng Việt.
 
@@ -48,3 +49,5 @@ SELECT Id, Email, VaiTro FROM dbo.TAI_KHOAN WHERE Email = @Email;
 ```
 
 Đăng nhập lại và mở `/Admin/Default.aspx` qua HTTPS. Đăng ký trên website luôn tạo vai trò `khach`. Việc đổi quyền/khóa tài khoản qua UI thuộc F06.
+
+Để kiểm tra F05, mở `/Admin/Loai.aspx` hoặc `/Admin/ThuCung.aspx`. Admin được quản lý loài và hồ sơ; staff được xem loài và thêm, sửa, ngừng giới thiệu thú cưng. Chỉ admin được xóa mềm hồ sơ. Không thể xóa loài còn hồ sơ hoặc xóa hồ sơ đang trong đơn hoạt động; trạng thái giữ chỗ và đã bán do đơn hàng quản lý.
