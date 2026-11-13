@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Xml.Linq;
 
 public class DAO_THU_CUNG : DAO_CoSo
 {
@@ -25,6 +28,13 @@ public class DAO_THU_CUNG : DAO_CoSo
     public DataSet ChiTiet(int id)
     {
         return TruyVan("sp_ThuCung_ChiTiet", new SqlParameter("@Id", SqlDbType.Int) { Value = id });
+    }
+
+    public DataTable DocGioHang(IEnumerable<int> danhSachId)
+    {
+        var ids = new XElement("gio", danhSachId.Select(id => new XElement("id", id)));
+        return TruyVan("sp_ThuCung_DocGioHang",
+            new SqlParameter("@DanhSachId", SqlDbType.Xml) { Value = ids.ToString(SaveOptions.DisableFormatting) }).Tables[0];
     }
 
     private static SqlParameter ThamSoGia(string ten, decimal? gia)

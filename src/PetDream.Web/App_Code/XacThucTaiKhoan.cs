@@ -85,14 +85,15 @@ public static class XacThucTaiKhoan
         };
 
         context.Response.Cookies.Set(cookie);
-        context.Session.Remove(TrangTaiKhoan.KhoaCsrf);
+        context.Session.Remove(TrangCoCsrf.KhoaCsrf);
         return KetQuaDangNhap.ThanhCong;
     }
 
     public static void DangXuat(HttpContext context)
     {
         XoaDanhTinh(context);
-        context.Session.Remove(TrangTaiKhoan.KhoaCsrf);
+        context.Session.Remove(TrangCoCsrf.KhoaCsrf);
+        GioHangPhien.XoaHet(context.Session);
     }
 
     public static string Bam(string matKhau)
