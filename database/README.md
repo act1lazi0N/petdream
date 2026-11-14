@@ -13,12 +13,16 @@ Kết nối `(localdb)\MSSQLLocalDB` bằng Windows Authentication trong **SQL S
 9. `011_catalog_integrity_schema.sql`: bổ sung lưu trữ loài, bộ sinh mã và bảo vệ mã đã cấp; cập nhật danh sách loài công khai.
 10. `010_admin_catalog_procedures.sql`: tạo/cập nhật procedure quản lý loài và thú cưng, kiểm tra quyền và ràng buộc với đơn hàng. Chạy sau 011.
 11. `013_admin_accounts_procedures.sql`: tạo/cập nhật procedure quản trị tài khoản; kiểm tra quyền admin, bảo vệ admin hoạt động cuối và cập nhật phiên bản xác thực khi đổi quyền hoặc trạng thái.
-12. `025_order_code_integrity.sql`: bảo vệ mã đơn duy nhất khi số ID vượt sáu chữ số, giữ nguyên mã hiện có.
-13. `024_admin_dashboard_procedures.sql`: tạo/cập nhật dữ liệu tổng quan quản trị. Chạy sau 011 và 025.
+12. `016_admin_orders_schema.sql`: bổ sung trạng thái lưu trữ đơn hàng, không xóa lịch sử.
+13. `017_admin_orders_procedures.sql`: tạo/cập nhật procedure quản lý đơn; tạo hộ và chuyển trạng thái dùng lại nghiệp vụ F04.
+14. `025_order_code_integrity.sql`: bảo vệ mã đơn duy nhất khi số ID vượt sáu chữ số, giữ nguyên mã hiện có.
+15. `024_admin_dashboard_procedures.sql`: tạo/cập nhật dữ liệu tổng quan quản trị. Chạy sau 011, 016 và 025.
 
 Mỗi file chứa `GO`, chạy bằng cửa sổ SQL Query. Không cần script PowerShell hoặc thao tác tự động lúc website khởi động. Nếu IDE hỏi encoding, chọn UTF-8 để giữ đúng tiếng Việt.
 
 Các file có thể chạy lại: schema chỉ tạo bảng còn thiếu, procedure dùng CREATE OR ALTER, seed kiểm tra mã hồ sơ và thứ tự ảnh trước khi thêm. Seed không đặt lại trạng thái hoặc ghi đè nội dung đã chỉnh sửa. Không có DROP DATABASE/TRUNCATE hay dữ liệu đơn hàng trong bộ seed. Chạy lại 007/008 không xóa đơn đã có.
+
+Khi nâng cấp từ bản F04/F05/F06 đã chạy trước đó, chạy lại 008 để cập nhật thủ tục đặt và chuyển trạng thái, sau đó chạy 016, 017 và chạy lại 024. F07 sử dụng chung giao dịch F04 và không tạo đường giữ chỗ riêng.
 
 Mã loài và thú cưng mới được cấp ở SQL, không tái sử dụng và không được sửa; mã cũ giữ nguyên. Lưu trữ loài và xóa mềm thú cưng giữ lại bản ghi, quan hệ và lịch sử. Nếu một database cũ đã có ID đơn từ 1.000.000 trở lên, 025 dừng để đối chiếu mã lịch sử trước khi nâng cấp, không tự đổi các mã đã công bố.
 
@@ -59,3 +63,5 @@ SELECT Id, Email, VaiTro FROM dbo.TAI_KHOAN WHERE Email = @Email;
 Đăng nhập lại và mở `/Admin/TaiKhoan.aspx` qua HTTPS để quản lý tài khoản. Đăng ký trên website luôn tạo vai trò `khach`. Chỉ admin được vào module tài khoản; khi đổi quyền, khóa, mở khóa hoặc xóa mềm, phiên cũ của tài khoản bị vô hiệu hóa. Không thể khóa, xóa hoặc hạ quyền admin hoạt động cuối cùng.
 
 Để kiểm tra F05, mở `/Admin/Loai.aspx` hoặc `/Admin/ThuCung.aspx`. Admin được quản lý loài và hồ sơ; staff được xem loài và thêm, sửa, ngừng giới thiệu thú cưng. Chỉ admin được xóa mềm hồ sơ. Không thể xóa loài còn hồ sơ hoặc xóa hồ sơ đang trong đơn hoạt động; trạng thái giữ chỗ và đã bán do đơn hàng quản lý.
+
+Mở `/Admin/DonHang.aspx` để tạo đơn hộ khách, xem và xử lý đơn. Admin và staff được vận hành đơn; chỉ admin được lưu trữ đơn đã hủy. Lưu trữ không xóa đơn hoặc lịch sử của khách.
