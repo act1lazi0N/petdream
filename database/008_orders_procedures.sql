@@ -45,7 +45,10 @@ BEGIN
         RETURN;
     END;
 
-    BEGIN TRANSACTION;
+    -- Cho phep F07 giu khoa danh tinh ben ngoai ma van dung cung giao dich F04.
+    DECLARE @GiaoDichNgoai bit = CASE WHEN @@TRANCOUNT > 0 THEN 1 ELSE 0 END;
+    IF @GiaoDichNgoai = 1 SAVE TRANSACTION DonHangDat;
+    ELSE BEGIN TRANSACTION;
 
     -- Khoa theo ma chong gui lap: lan gui thu hai cho lan dau xong roi nhan lai cung don.
     SELECT @DonHangId = Id, @ChuDon = TaiKhoanId
@@ -54,7 +57,7 @@ BEGIN
 
     IF @DonHangId IS NOT NULL
     BEGIN
-        COMMIT;
+        IF @GiaoDichNgoai = 0 COMMIT;
         IF @ChuDon = @TaiKhoanId
             SELECT 'da_ton_tai' AS KetQua, @DonHangId AS DonHangId;
         ELSE
@@ -65,7 +68,8 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM dbo.TAI_KHOAN WHERE Id = @TaiKhoanId AND HoatDong = 1 AND DaXoa = 0)
         OR NOT EXISTS (SELECT 1 FROM dbo.TAI_KHOAN WHERE Id = @NguoiTaoId AND HoatDong = 1 AND DaXoa = 0)
     BEGIN
-        ROLLBACK;
+        IF @GiaoDichNgoai = 1 ROLLBACK TRANSACTION DonHangDat;
+        ELSE ROLLBACK;
         SELECT 'khong_hop_le' AS KetQua, CAST(NULL AS int) AS DonHangId;
         RETURN;
     END;
@@ -78,7 +82,8 @@ BEGIN
 
     IF (SELECT COUNT(*) FROM @Be WHERE TrangThai = 'dang_ban' AND DaXoa = 0) <> (SELECT COUNT(*) FROM @Gio)
     BEGIN
-        ROLLBACK;
+        IF @GiaoDichNgoai = 1 ROLLBACK TRANSACTION DonHangDat;
+        ELSE ROLLBACK;
         SELECT 'khong_kha_dung' AS KetQua, CAST(NULL AS int) AS DonHangId;
         RETURN;
     END;
@@ -86,7 +91,8 @@ BEGIN
     -- Gia doi sau khi khach xem: khong dat, yeu cau khach xem lai.
     IF EXISTS (SELECT 1 FROM @Be WHERE Gia <> GiaXem)
     BEGIN
-        ROLLBACK;
+        IF @GiaoDichNgoai = 1 ROLLBACK TRANSACTION DonHangDat;
+        ELSE ROLLBACK;
         SELECT 'gia_doi' AS KetQua, CAST(NULL AS int) AS DonHangId;
         RETURN;
     END;
@@ -107,7 +113,7 @@ BEGIN
     IF @@ROWCOUNT <> (SELECT COUNT(*) FROM @Be)
         THROW 50001, N'Khong giu cho duoc day du thu cung trong don.', 1;
 
-    COMMIT;
+    IF @GiaoDichNgoai = 0 COMMIT;
     SELECT 'thanh_cong' AS KetQua, @DonHangId AS DonHangId;
 END;
 GO
@@ -125,7 +131,8 @@ BEGIN
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
 
-    IF NOT ((@TrangThaiCu = 'cho_xac_nhan' AND @TrangThaiMoi IN ('da_xac_nhan', 'da_huy'))
+    IF @TrangThaiCu IS NULL OR @TrangThaiMoi IS NULL
+        OR NOT ((@TrangThaiCu = 'cho_xac_nhan' AND @TrangThaiMoi IN ('da_xac_nhan', 'da_huy'))
             OR (@TrangThaiCu = 'da_xac_nhan' AND @TrangThaiMoi IN ('dang_giao', 'da_huy'))
             OR (@TrangThaiCu = 'dang_giao' AND @TrangThaiMoi IN ('da_giao', 'da_huy')))
         OR (@KhachHangId IS NOT NULL AND NOT (@TrangThaiCu = 'cho_xac_nhan' AND @TrangThaiMoi = 'da_huy'))
@@ -134,7 +141,9 @@ BEGIN
         RETURN;
     END;
 
-    BEGIN TRANSACTION;
+    DECLARE @GiaoDichNgoai bit = CASE WHEN @@TRANCOUNT > 0 THEN 1 ELSE 0 END;
+    IF @GiaoDichNgoai = 1 SAVE TRANSACTION DonHangChuyen;
+    ELSE BEGIN TRANSACTION;
 
     DECLARE @HienTai varchar(20);
     SELECT @HienTai = TrangThai
@@ -143,14 +152,16 @@ BEGIN
 
     IF @HienTai IS NULL
     BEGIN
-        ROLLBACK;
+        IF @GiaoDichNgoai = 1 ROLLBACK TRANSACTION DonHangChuyen;
+        ELSE ROLLBACK;
         SELECT 'khong_tim_thay' AS KetQua;
         RETURN;
     END;
 
     IF @HienTai <> @TrangThaiCu
     BEGIN
-        ROLLBACK;
+        IF @GiaoDichNgoai = 1 ROLLBACK TRANSACTION DonHangChuyen;
+        ELSE ROLLBACK;
         SELECT 'trang_thai_doi' AS KetQua;
         RETURN;
     END;
@@ -172,7 +183,7 @@ BEGIN
         INNER JOIN dbo.CHI_TIET_DON_HANG AS c ON c.ThuCungId = t.Id
         WHERE c.DonHangId = @DonHangId AND t.TrangThai = 'giu_cho';
 
-    COMMIT;
+    IF @GiaoDichNgoai = 0 COMMIT;
     SELECT 'thanh_cong' AS KetQua;
 END;
 GO
