@@ -14,7 +14,10 @@
         </asp:ScriptManager>
         <header class="site-header">
             <a class="brand" href="<%= ResolveUrl("~/Admin/Default.aspx") %>">PetDream<span>Khung quản trị</span></a>
-            <a href="<%= ResolveUrl("~/Default.aspx") %>">Về trang chủ</a>
+            <nav class="account-nav" aria-label="Điều hướng tài khoản">
+                <a href="<%= ResolveUrl("~/Default.aspx") %>">Trang chủ</a>
+                <a href="<%= ResolveUrl("~/DangXuat.aspx") %>">Đăng xuất</a>
+            </nav>
         </header>
         <main class="container admin-content">
             <asp:ContentPlaceHolder ID="AdminContent" runat="server" />
