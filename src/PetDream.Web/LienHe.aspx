@@ -3,17 +3,16 @@
     <section class="contact" aria-labelledby="tieude">
         <p class="eyebrow">LIÊN HỆ</p>
         <h1 id="tieude">Trò chuyện cùng PetDream</h1>
-        <p class="contact-lead">Bạn cần tư vấn chọn bé, hỏi về đơn hàng hay cách chăm sóc thú cưng? Để lại lời nhắn, chúng mình sẽ phản hồi sớm nhất.</p>
+        <p class="contact-lead">Bạn cần tư vấn chọn thú cưng hoặc hỗ trợ về đơn hàng? Thông tin liên hệ của cửa hàng sẽ sớm được cập nhật tại đây.</p>
         <div class="contact-layout">
             <aside class="contact-info" aria-labelledby="tieude_thongtin">
                 <h2 id="tieude_thongtin">Thông tin cửa hàng</h2>
                 <dl>
-                    <dt>Giờ mở cửa</dt><dd>8:00 – 20:00, thứ Hai đến Chủ nhật</dd>
-                    <dt>Email</dt><dd>lienhe@petdream.test</dd>
-                    <dt>Điện thoại</dt><dd>0900 000 000</dd>
-                    <dt>Địa chỉ</dt><dd>Cửa hàng mẫu của đồ án PetDream</dd>
+                    <dt>Email</dt><dd>Đang cập nhật</dd>
+                    <dt>Điện thoại</dt><dd>Đang cập nhật</dd>
+                    <dt>Địa chỉ</dt><dd>Đang cập nhật</dd>
                 </dl>
-                <p class="contact-note">Website đồ án: biểu mẫu chỉ kiểm tra thông tin rồi thông báo thành công, không gửi email hay lưu nội dung.</p>
+                <p class="contact-note">Chức năng tiếp nhận lời nhắn hiện chưa khả dụng.</p>
             </aside>
             <div class="contact-form">
                 <h2>Gửi lời nhắn</h2>
@@ -48,7 +47,7 @@
                     <asp:RequiredFieldValidator runat="server" ControlToValidate="txt_noidung" Display="Dynamic"
                         CssClass="field-error" ErrorMessage="Vui lòng nhập nội dung." />
                 </div>
-                <asp:Button ID="btn_gui" runat="server" CssClass="button" Text="Gửi lời nhắn" OnClick="btn_gui_Click" />
+                <asp:Button ID="btn_gui" runat="server" CssClass="button" Text="Gửi lời nhắn" Enabled="false" OnClick="btn_gui_Click" />
             </div>
         </div>
     </section>

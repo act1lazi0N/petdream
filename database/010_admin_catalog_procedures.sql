@@ -1,4 +1,4 @@
--- F05. Chay sau 001-005, 007 va 008. Khong xoa du lieu hien co.
+-- F05. Chay sau 001-005, 007, 008 va 011. Khong xoa du lieu hien co.
 USE PetDream;
 GO
 SET ANSI_NULLS ON;
@@ -8,14 +8,14 @@ CREATE OR ALTER PROCEDURE dbo.sp_QuanTriLoai_DanhSach
 AS
 BEGIN
     SET NOCOUNT ON;
-    SELECT Id, Ma, Ten, MoTa, ThuTu FROM dbo.LOAI ORDER BY ThuTu, Id;
+    SELECT Id, Ma, Ten, MoTa, ThuTu FROM dbo.LOAI WHERE DaXoa = 0 ORDER BY ThuTu, Id;
 END;
 GO
 CREATE OR ALTER PROCEDURE dbo.sp_QuanTriLoai_ChiTiet @Id int
 AS
 BEGIN
     SET NOCOUNT ON;
-    SELECT Id, Ma, Ten, MoTa, ThuTu FROM dbo.LOAI WHERE Id = @Id;
+    SELECT Id, Ma, Ten, MoTa, ThuTu FROM dbo.LOAI WHERE Id = @Id AND DaXoa = 0;
 END;
 GO
 CREATE OR ALTER PROCEDURE dbo.sp_QuanTriLoai_Luu
@@ -25,7 +25,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
-    IF @Id IS NULL OR @Id < 0 OR NULLIF(LTRIM(RTRIM(@Ma)), '') IS NULL
+    IF @Id IS NULL OR @Id < 0
        OR NULLIF(LTRIM(RTRIM(@Ten)), N'') IS NULL OR @MoTa IS NULL OR @ThuTu IS NULL
     BEGIN SELECT 'khong_hop_le' AS KetQua; RETURN; END;
     BEGIN TRANSACTION;
@@ -33,11 +33,39 @@ BEGIN
         WHERE Id = @NguoiId AND PhienBanXacThuc = @PhienBanNguoi
           AND VaiTro = 'admin' AND HoatDong = 1 AND DaXoa = 0)
     BEGIN ROLLBACK; SELECT 'khong_du_quyen' AS KetQua; RETURN; END;
+    -- Tuan tu hoa tao, doi ten va luu tru loai de khong trung ten khi co request dong thoi.
+    DECLARE @KhoaTen int;
+    EXEC @KhoaTen = sys.sp_getapplock @Resource = N'PetDream.QuanTriLoai',
+        @LockMode = 'Exclusive', @LockOwner = 'Transaction', @LockTimeout = 10000;
+    IF @KhoaTen < 0 THROW 51012, 'Khong lay duoc khoa danh muc loai.', 1;
+
+    DECLARE @TenCu nvarchar(60);
+    IF @Id <> 0
+    BEGIN
+        SELECT @TenCu = Ten FROM dbo.LOAI WITH (UPDLOCK, HOLDLOCK) WHERE Id = @Id AND DaXoa = 0;
+        IF @TenCu IS NULL
+        BEGIN ROLLBACK; SELECT 'khong_tim_thay' AS KetQua; RETURN; END;
+    END;
+    -- Cho sua thuoc tinh khac cua du lieu cu da trung ten neu khong doi ten.
+    IF (@Id = 0 OR LTRIM(RTRIM(@TenCu)) COLLATE Latin1_General_100_CI_AS <> LTRIM(RTRIM(@Ten)) COLLATE Latin1_General_100_CI_AS)
+       AND EXISTS (SELECT 1 FROM dbo.LOAI WHERE Id <> @Id AND DaXoa = 0
+                   AND LTRIM(RTRIM(Ten)) COLLATE Latin1_General_100_CI_AS = LTRIM(RTRIM(@Ten)) COLLATE Latin1_General_100_CI_AS)
+    BEGIN ROLLBACK; SELECT 'trung_ten' AS KetQua; RETURN; END;
     IF @Id = 0
-        INSERT dbo.LOAI (Ma, Ten, MoTa, ThuTu) VALUES (@Ma, @Ten, @MoTa, @ThuTu);
+    BEGIN
+        -- @Ma tu caller chi de tuong thich: ma moi luon do SQL cap va khong tai su dung.
+        DECLARE @SoLoai bigint, @MaMoi varchar(20);
+        WHILE 1 = 1
+        BEGIN
+            SET @SoLoai = NEXT VALUE FOR dbo.SeqMaLoai;
+            SET @MaMoi = 'LOAI-' + REPLICATE('0', CASE WHEN LEN(CONVERT(varchar(20), @SoLoai)) < 6 THEN 6 - LEN(CONVERT(varchar(20), @SoLoai)) ELSE 0 END) + CONVERT(varchar(20), @SoLoai);
+            IF NOT EXISTS (SELECT 1 FROM dbo.LOAI WITH (UPDLOCK, HOLDLOCK) WHERE Ma = @MaMoi) BREAK;
+        END;
+        INSERT dbo.LOAI (Ma, Ten, MoTa, ThuTu) VALUES (@MaMoi, @Ten, @MoTa, @ThuTu);
+    END
     ELSE
     BEGIN
-        UPDATE dbo.LOAI SET Ma = @Ma, Ten = @Ten, MoTa = @MoTa, ThuTu = @ThuTu WHERE Id = @Id;
+        UPDATE dbo.LOAI SET Ten = @Ten, MoTa = @MoTa, ThuTu = @ThuTu WHERE Id = @Id AND DaXoa = 0;
         IF @@ROWCOUNT = 0
         BEGIN ROLLBACK; SELECT 'khong_tim_thay' AS KetQua; RETURN; END;
     END;
@@ -55,12 +83,16 @@ BEGIN
         WHERE Id = @NguoiId AND PhienBanXacThuc = @PhienBanNguoi
           AND VaiTro = 'admin' AND HoatDong = 1 AND DaXoa = 0)
     BEGIN ROLLBACK; SELECT 'khong_du_quyen' AS KetQua; RETURN; END;
-    IF NOT EXISTS (SELECT 1 FROM dbo.LOAI WITH (UPDLOCK, HOLDLOCK) WHERE Id = @Id)
+    DECLARE @KhoaTen int;
+    EXEC @KhoaTen = sys.sp_getapplock @Resource = N'PetDream.QuanTriLoai',
+        @LockMode = 'Exclusive', @LockOwner = 'Transaction', @LockTimeout = 10000;
+    IF @KhoaTen < 0 THROW 51012, 'Khong lay duoc khoa danh muc loai.', 1;
+    IF NOT EXISTS (SELECT 1 FROM dbo.LOAI WITH (UPDLOCK, HOLDLOCK) WHERE Id = @Id AND DaXoa = 0)
     BEGIN ROLLBACK; SELECT 'khong_tim_thay' AS KetQua; RETURN; END;
     -- Giu khoa tren loai cho den commit; FK cua thao tac tao/sua be cung phai kiem tra loai.
-    IF EXISTS (SELECT 1 FROM dbo.THU_CUNG WITH (UPDLOCK, HOLDLOCK) WHERE LoaiId = @Id)
+    IF EXISTS (SELECT 1 FROM dbo.THU_CUNG WITH (UPDLOCK, HOLDLOCK) WHERE LoaiId = @Id AND DaXoa = 0)
     BEGIN ROLLBACK; SELECT 'loai_con_thu_cung' AS KetQua; RETURN; END;
-    DELETE dbo.LOAI WHERE Id = @Id;
+    UPDATE dbo.LOAI SET DaXoa = 1 WHERE Id = @Id;
     COMMIT;
     SELECT 'thanh_cong' AS KetQua;
 END;
@@ -78,7 +110,8 @@ CREATE OR ALTER PROCEDURE dbo.sp_QuanTriThuCung_ChiTiet @Id int
 AS
 BEGIN
     SET NOCOUNT ON;
-    SELECT t.*, a.DuongDan, a.OAnh FROM dbo.THU_CUNG AS t
+    SELECT t.*, l.Ten AS TenLoai, l.DaXoa AS LoaiDaXoa, a.DuongDan, a.OAnh FROM dbo.THU_CUNG AS t
+    INNER JOIN dbo.LOAI AS l ON l.Id = t.LoaiId
     OUTER APPLY (SELECT TOP (1) DuongDan, OAnh FROM dbo.ANH_THU_CUNG WHERE ThuCungId = t.Id ORDER BY ThuTu, Id) AS a
     WHERE t.Id = @Id;
 END;
@@ -95,7 +128,7 @@ BEGIN
     SET XACT_ABORT ON;
     DECLARE @TenAnh nvarchar(32) = SUBSTRING(@DuongDanAnh, 20, 32);
     IF @Id IS NULL OR @Id < 0 OR @LoaiId IS NULL OR @LoaiId <= 0
-       OR NULLIF(LTRIM(RTRIM(@Ma)), '') IS NULL OR NULLIF(LTRIM(RTRIM(@Ten)), N'') IS NULL
+       OR NULLIF(LTRIM(RTRIM(@Ten)), N'') IS NULL
        OR NULLIF(LTRIM(RTRIM(@Giong)), N'') IS NULL OR @GioiTinh NOT IN ('D','C') OR @GioiTinh IS NULL
        OR @NgaySinh IS NULL OR @NgaySinh > CONVERT(date, GETDATE()) OR @CanNang IS NULL OR @CanNang <= 0
        OR NULLIF(LTRIM(RTRIM(@KichThuoc)), N'') IS NULL OR @Gia IS NULL OR @Gia < 0
@@ -112,13 +145,23 @@ BEGIN
         WHERE Id = @NguoiId AND PhienBanXacThuc = @PhienBanNguoi
           AND VaiTro IN ('admin','staff') AND HoatDong = 1 AND DaXoa = 0)
     BEGIN ROLLBACK; SELECT 'khong_du_quyen' AS KetQua, CAST(NULL AS int) AS Id; RETURN; END;
-    IF NOT EXISTS (SELECT 1 FROM dbo.LOAI WITH (UPDLOCK, HOLDLOCK) WHERE Id = @LoaiId)
+    DECLARE @MaLoai varchar(20);
+    SELECT @MaLoai = Ma FROM dbo.LOAI WITH (UPDLOCK, HOLDLOCK) WHERE Id = @LoaiId AND DaXoa = 0;
+    IF @MaLoai IS NULL
     BEGIN ROLLBACK; SELECT 'khong_hop_le' AS KetQua, CAST(NULL AS int) AS Id; RETURN; END;
     IF @Id = 0
     BEGIN
+        -- Nhan dien theo ma loai luc tao; chuyen loai sau nay khong doi ma da cap.
+        DECLARE @SoThuCung bigint, @MaThuCung varchar(30);
+        WHILE 1 = 1
+        BEGIN
+            SET @SoThuCung = NEXT VALUE FOR dbo.SeqMaThuCung;
+            SET @MaThuCung = UPPER(LEFT(@MaLoai, 15)) + '-' + REPLICATE('0', CASE WHEN LEN(CONVERT(varchar(20), @SoThuCung)) < 3 THEN 3 - LEN(CONVERT(varchar(20), @SoThuCung)) ELSE 0 END) + CONVERT(varchar(20), @SoThuCung);
+            IF NOT EXISTS (SELECT 1 FROM dbo.THU_CUNG WITH (UPDLOCK, HOLDLOCK) WHERE Ma = @MaThuCung) BREAK;
+        END;
         INSERT dbo.THU_CUNG (Ma, LoaiId, Ten, Giong, GioiTinh, NgaySinh, CanNang, KichThuoc,
             Gia, MoTa, TiemChung, DacDiem, TrangThai, NoiBat)
-        VALUES (@Ma, @LoaiId, @Ten, @Giong, @GioiTinh, @NgaySinh, @CanNang, @KichThuoc,
+        VALUES (@MaThuCung, @LoaiId, @Ten, @Giong, @GioiTinh, @NgaySinh, @CanNang, @KichThuoc,
             @Gia, @MoTa, @TiemChung, @DacDiem, @TrangThai, @NoiBat);
         SET @Id = SCOPE_IDENTITY();
     END
@@ -132,7 +175,7 @@ BEGIN
         IF (@TrangThaiCu IN ('giu_cho','da_ban') AND @TrangThai <> @TrangThaiCu)
            OR (@TrangThaiCu IN ('dang_ban','ngung_ban') AND @TrangThai NOT IN ('dang_ban','ngung_ban'))
         BEGIN ROLLBACK; SELECT 'trang_thai_doi' AS KetQua, CAST(NULL AS int) AS Id; RETURN; END;
-        UPDATE dbo.THU_CUNG SET Ma = @Ma, LoaiId = @LoaiId, Ten = @Ten, Giong = @Giong,
+        UPDATE dbo.THU_CUNG SET LoaiId = @LoaiId, Ten = @Ten, Giong = @Giong,
             GioiTinh = @GioiTinh, NgaySinh = @NgaySinh, CanNang = @CanNang, KichThuoc = @KichThuoc,
             Gia = @Gia, MoTa = @MoTa, TiemChung = @TiemChung, DacDiem = @DacDiem,
             TrangThai = @TrangThai, NoiBat = @NoiBat WHERE Id = @Id;

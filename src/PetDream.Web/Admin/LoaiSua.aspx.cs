@@ -10,7 +10,7 @@ public partial class QuanTriLoaiSua : TrangTaiKhoan
 {
     private int id;
     protected override string ThongBaoLoiDuLieu { get { return "Danh mục loài tạm thời chưa sẵn sàng. Vui lòng thử lại sau."; } }
-    protected override string ThongBaoTrungDuLieu { get { return "Mã loài đã được sử dụng."; } }
+    protected override string ThongBaoTrungDuLieu { get { return "Không thể lưu danh mục. Vui lòng thử lại."; } }
 
     protected override void OnInit(EventArgs e)
     {
@@ -44,10 +44,18 @@ public partial class QuanTriLoaiSua : TrangTaiKhoan
     {
         ThucHien(lit_thongbao, () =>
         {
-            string ma = (txt_ma.Text ?? "").Trim(); string ten = (txt_ten.Text ?? "").Trim(); string moTa = (txt_mota.Text ?? "").Trim(); int thuTu;
-            if (!Regex.IsMatch(ma, @"\A[A-Za-z0-9_-]{1,20}\z") || ten.Length < 1 || ten.Length > 60 || moTa.Length > 250 || Regex.IsMatch(ten, @"\p{C}") || !int.TryParse(txt_thutu.Text, NumberStyles.Integer, CultureInfo.InvariantCulture, out thuTu))
-            { lit_thongbao.Text = "Vui lòng kiểm tra mã, tên, mô tả và thứ tự hiển thị."; return; }
-            XuLy(new DAO_QUAN_TRI_DANH_MUC().LuuLoai(TaiKhoanHienTai, id, ma, ten, moTa, thuTu));
+            string ten = (txt_ten.Text ?? "").Trim(); string moTa = (txt_mota.Text ?? "").Trim(); int thuTu;
+            if (KiemTraVanBanQuanTri.CoDauNgoacNhon(ten))
+            { lit_thongbao.Text = "Tên loài không được chứa dấu < hoặc >."; return; }
+            if (KiemTraVanBanQuanTri.CoDauNgoacNhon(moTa))
+            { lit_thongbao.Text = "Mô tả chỉ hỗ trợ văn bản thuần, không chứa dấu < hoặc >."; return; }
+            if (ten.Length < 1 || ten.Length > 60 || Regex.IsMatch(ten, @"\p{C}"))
+            { lit_thongbao.Text = "Nhập tên loài từ 1 đến 60 ký tự hợp lệ."; return; }
+            if (moTa.Length > 250)
+            { lit_thongbao.Text = "Mô tả không được dài quá 250 ký tự."; return; }
+            if (!int.TryParse(txt_thutu.Text, NumberStyles.Integer, CultureInfo.InvariantCulture, out thuTu))
+            { lit_thongbao.Text = "Thứ tự hiển thị phải là một số nguyên hợp lệ."; return; }
+            XuLy(new DAO_QUAN_TRI_DANH_MUC().LuuLoai(TaiKhoanHienTai, id, null, ten, moTa, thuTu));
         });
     }
 
@@ -64,7 +72,8 @@ public partial class QuanTriLoaiSua : TrangTaiKhoan
             case "thanh_cong": ChuyenTrang("~/Admin/Loai.aspx?luu=1"); return;
             case "khong_du_quyen": throw new HttpException(403, "Bạn không có quyền thay đổi loài.");
             case "khong_tim_thay": throw new HttpException(404, "Không tìm thấy loài.");
-            case "loai_con_thu_cung": lit_thongbao.Text = "Không thể xóa loài còn hồ sơ thú cưng."; return;
+            case "trung_ten": lit_thongbao.Text = "Tên loài đã tồn tại. Vui lòng chọn tên khác."; return;
+            case "loai_con_thu_cung": lit_thongbao.Text = "Loài vẫn còn hồ sơ thú cưng. Hãy lưu trữ các hồ sơ trước."; return;
             default: lit_thongbao.Text = "Không thể lưu. Vui lòng kiểm tra lại dữ liệu."; return;
         }
     }

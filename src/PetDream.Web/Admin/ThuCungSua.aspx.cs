@@ -12,7 +12,7 @@ public partial class QuanTriThuCungSua : TrangTaiKhoan
     private int id;
     private bool LaAdmin { get { return TaiKhoanHienTai != null && TaiKhoanHienTai.VaiTro == "admin"; } }
     protected override string ThongBaoLoiDuLieu { get { return "Hồ sơ thú cưng tạm thời chưa sẵn sàng. Vui lòng thử lại sau."; } }
-    protected override string ThongBaoTrungDuLieu { get { return "Mã hồ sơ đã được sử dụng."; } }
+    protected override string ThongBaoTrungDuLieu { get { return "Không thể lưu hồ sơ. Vui lòng thử lại."; } }
 
     protected override void OnInit(EventArgs e)
     {
@@ -47,7 +47,11 @@ public partial class QuanTriThuCungSua : TrangTaiKhoan
             if (id == 0) return;
             DataRow dong = dao.ChiTietThuCung(id);
             if (dong == null) throw new HttpException(404, "Không tìm thấy hồ sơ.");
-            txt_ma.Text = Convert.ToString(dong["Ma"]); ddl_loai.SelectedValue = Convert.ToString(dong["LoaiId"]);
+            txt_ma.Text = Convert.ToString(dong["Ma"]);
+            string loaiId = Convert.ToString(dong["LoaiId"]);
+            if (ddl_loai.Items.FindByValue(loaiId) == null)
+                ddl_loai.Items.Add(new ListItem(Convert.ToString(dong["TenLoai"]) + " (đã lưu trữ)", loaiId));
+            ddl_loai.SelectedValue = loaiId;
             txt_ten.Text = Convert.ToString(dong["Ten"]); txt_giong.Text = Convert.ToString(dong["Giong"]);
             ddl_gioitinh.SelectedValue = Convert.ToString(dong["GioiTinh"]);
             txt_ngaysinh.Text = Convert.ToDateTime(dong["NgaySinh"]).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
@@ -67,7 +71,7 @@ public partial class QuanTriThuCungSua : TrangTaiKhoan
             if (Convert.ToBoolean(dong["DaXoa"]))
             {
                 pnl_bieumau.Enabled = false;
-                lit_thongbao.Text = "Hồ sơ này đã được xóa mềm và chỉ có thể xem.";
+                lit_thongbao.Text = "Hồ sơ đã được lưu trữ và chỉ có thể xem.";
             }
         }
         catch (SqlException ex) { BaoLoiDuLieu(lit_thongbao, ex); }
@@ -108,25 +112,46 @@ public partial class QuanTriThuCungSua : TrangTaiKhoan
     private bool ThuDocHoSo(out HoSoQuanTriThuCung hoSo, out string loi)
     {
         hoSo = null;
-        string ma = (txt_ma.Text ?? "").Trim(), ten = (txt_ten.Text ?? "").Trim(), giong = (txt_giong.Text ?? "").Trim();
+        string ten = (txt_ten.Text ?? "").Trim(), giong = (txt_giong.Text ?? "").Trim();
         string kichThuoc = (txt_kichthuoc.Text ?? "").Trim(), moTa = (txt_mota.Text ?? "").Trim(), tiemChung = (txt_tiemchung.Text ?? "").Trim(), dacDiem = (txt_dacdiem.Text ?? "").Trim();
+        if (KiemTraVanBanQuanTri.CoDauNgoacNhon(ten))
+        { loi = "Tên thú cưng không được chứa dấu < hoặc >."; return false; }
+        if (KiemTraVanBanQuanTri.CoDauNgoacNhon(giong))
+        { loi = "Tên giống không được chứa dấu < hoặc >."; return false; }
+        if (KiemTraVanBanQuanTri.CoDauNgoacNhon(kichThuoc))
+        { loi = "Kích thước không được chứa dấu < hoặc >."; return false; }
+        if (KiemTraVanBanQuanTri.CoDauNgoacNhon(moTa))
+        { loi = "Mô tả chỉ hỗ trợ văn bản thuần, không chứa dấu < hoặc >."; return false; }
+        if (KiemTraVanBanQuanTri.CoDauNgoacNhon(tiemChung))
+        { loi = "Thông tin tiêm chủng chỉ hỗ trợ văn bản thuần, không chứa dấu < hoặc >."; return false; }
+        if (KiemTraVanBanQuanTri.CoDauNgoacNhon(dacDiem))
+        { loi = "Đặc điểm chỉ hỗ trợ văn bản thuần, không chứa dấu < hoặc >."; return false; }
         int loai; DateTime ngaySinh; decimal canNang, gia;
         string trangThai = ddl_trangthai.SelectedValue;
         string trangThaiGoc = ViewState["TrangThaiGoc"] as string;
         if (trangThaiGoc == "giu_cho" || trangThaiGoc == "da_ban") trangThai = trangThaiGoc;
         bool trangThaiHopLe = trangThai == "dang_ban" || trangThai == "ngung_ban" || (id != 0 && (trangThai == "giu_cho" || trangThai == "da_ban") && trangThai == trangThaiGoc);
-        if (!Regex.IsMatch(ma, @"\A[A-Za-z0-9_-]{1,30}\z") || !int.TryParse(ddl_loai.SelectedValue, NumberStyles.None, CultureInfo.InvariantCulture, out loai) || loai <= 0
-            || ten.Length < 1 || ten.Length > 80 || giong.Length < 1 || giong.Length > 100 || kichThuoc.Length < 1 || kichThuoc.Length > 100
-            || Regex.IsMatch(ten + giong + kichThuoc, @"\p{C}") || (ddl_gioitinh.SelectedValue != "D" && ddl_gioitinh.SelectedValue != "C")
-            || !DateTime.TryParseExact(txt_ngaysinh.Text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out ngaySinh) || ngaySinh.Date > DateTime.UtcNow.AddHours(7).Date
-            || !decimal.TryParse(txt_cannang.Text, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out canNang) || canNang <= 0 || canNang > 9999.99m || decimal.Round(canNang, 2) != canNang
-            || !decimal.TryParse(txt_gia.Text, NumberStyles.None, CultureInfo.InvariantCulture, out gia) || gia < 0 || gia > 999999999999999999m
-            || moTa.Length > 2000 || tiemChung.Length > 1000 || dacDiem.Length > 1000 || !trangThaiHopLe)
-        {
-            loi = "Vui lòng kiểm tra mã, loài, thông tin thú cưng, ngày sinh, cân nặng, giá và trạng thái.";
-            return false;
-        }
-        hoSo = new HoSoQuanTriThuCung { Ma = ma, LoaiId = loai, Ten = ten, Giong = giong, GioiTinh = ddl_gioitinh.SelectedValue,
+        if (!int.TryParse(ddl_loai.SelectedValue, NumberStyles.None, CultureInfo.InvariantCulture, out loai) || loai <= 0)
+        { loi = "Vui lòng chọn loài thú cưng."; return false; }
+        if (ten.Length < 1 || ten.Length > 80 || Regex.IsMatch(ten, @"\p{C}"))
+        { loi = "Nhập tên thú cưng từ 1 đến 80 ký tự hợp lệ."; return false; }
+        if (giong.Length < 1 || giong.Length > 100 || Regex.IsMatch(giong, @"\p{C}"))
+        { loi = "Nhập giống thú cưng từ 1 đến 100 ký tự hợp lệ."; return false; }
+        if (kichThuoc.Length < 1 || kichThuoc.Length > 100 || Regex.IsMatch(kichThuoc, @"\p{C}"))
+        { loi = "Nhập kích thước từ 1 đến 100 ký tự hợp lệ."; return false; }
+        if (ddl_gioitinh.SelectedValue != "D" && ddl_gioitinh.SelectedValue != "C")
+        { loi = "Vui lòng chọn giới tính hợp lệ."; return false; }
+        if (!DateTime.TryParseExact(txt_ngaysinh.Text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out ngaySinh) || ngaySinh.Date > DateTime.UtcNow.AddHours(7).Date)
+        { loi = "Ngày sinh không hợp lệ hoặc ở trong tương lai."; return false; }
+        if (!decimal.TryParse(txt_cannang.Text, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out canNang) || canNang <= 0 || canNang > 9999.99m || decimal.Round(canNang, 2) != canNang)
+        { loi = "Cân nặng phải lớn hơn 0, tối đa 9.999,99 kg và có tối đa hai chữ số thập phân."; return false; }
+        if (!decimal.TryParse(txt_gia.Text, NumberStyles.None, CultureInfo.InvariantCulture, out gia) || gia < 0 || gia > 999999999999999999m)
+        { loi = "Giá phải là số nguyên từ 0 đến 999.999.999.999.999.999 đồng."; return false; }
+        if (moTa.Length > 2000 || tiemChung.Length > 1000 || dacDiem.Length > 1000)
+        { loi = "Mô tả tối đa 2.000 ký tự; tiêm chủng và đặc điểm tối đa 1.000 ký tự."; return false; }
+        if (!trangThaiHopLe)
+        { loi = "Trạng thái không hợp lệ. Vui lòng tải lại hồ sơ."; return false; }
+        hoSo = new HoSoQuanTriThuCung { LoaiId = loai, Ten = ten, Giong = giong, GioiTinh = ddl_gioitinh.SelectedValue,
             NgaySinh = ngaySinh.Date, CanNang = canNang, KichThuoc = kichThuoc, Gia = gia, MoTa = moTa,
             TiemChung = tiemChung, DacDiem = dacDiem, TrangThai = trangThai, NoiBat = chk_noibat.Checked };
         loi = null; return true;

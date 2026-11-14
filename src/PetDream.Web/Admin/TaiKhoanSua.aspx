@@ -7,17 +7,17 @@
         <asp:Panel ID="pnl_bieumau" runat="server">
             <div class="account-field">
                 <asp:Label runat="server" AssociatedControlID="txt_hoten" Text="Họ tên" />
-                <asp:TextBox ID="txt_hoten" runat="server" MaxLength="100" autocomplete="name" />
+                <asp:TextBox ValidateRequestMode="Disabled" ID="txt_hoten" runat="server" MaxLength="100" autocomplete="name" />
                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txt_hoten" Display="Dynamic" CssClass="field-error" ErrorMessage="Vui lòng nhập họ tên." />
             </div>
             <div class="account-field">
                 <asp:Label runat="server" AssociatedControlID="txt_email" Text="Email" />
-                <asp:TextBox ID="txt_email" runat="server" TextMode="Email" MaxLength="254" autocomplete="email" />
+                <asp:TextBox ValidateRequestMode="Disabled" ID="txt_email" runat="server" TextMode="Email" MaxLength="254" autocomplete="email" />
                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txt_email" Display="Dynamic" CssClass="field-error" ErrorMessage="Vui lòng nhập email." />
             </div>
             <div class="account-field">
                 <asp:Label runat="server" AssociatedControlID="txt_dienthoai" Text="Số điện thoại" />
-                <asp:TextBox ID="txt_dienthoai" runat="server" TextMode="Phone" MaxLength="13" autocomplete="tel" />
+                <asp:TextBox ValidateRequestMode="Disabled" ID="txt_dienthoai" runat="server" TextMode="Phone" MaxLength="13" autocomplete="tel" />
                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txt_dienthoai" Display="Dynamic" CssClass="field-error" ErrorMessage="Vui lòng nhập số điện thoại." />
             </div>
             <div class="account-field">
@@ -31,12 +31,12 @@
             <asp:Panel ID="pnl_matkhau" runat="server">
                 <div class="account-field">
                     <asp:Label runat="server" AssociatedControlID="txt_matkhau" Text="Mật khẩu" />
-                    <asp:TextBox ID="txt_matkhau" runat="server" TextMode="Password" MaxLength="128" autocomplete="new-password" />
+                    <asp:TextBox ValidateRequestMode="Disabled" ID="txt_matkhau" runat="server" TextMode="Password" MaxLength="128" autocomplete="new-password" />
                     <p class="admin-help">Từ 12 đến 128 ký tự.</p>
                 </div>
                 <div class="account-field">
                     <asp:Label runat="server" AssociatedControlID="txt_xacnhan" Text="Xác nhận mật khẩu" />
-                    <asp:TextBox ID="txt_xacnhan" runat="server" TextMode="Password" MaxLength="128" autocomplete="new-password" />
+                    <asp:TextBox ValidateRequestMode="Disabled" ID="txt_xacnhan" runat="server" TextMode="Password" MaxLength="128" autocomplete="new-password" />
                 </div>
             </asp:Panel>
             <div class="admin-account-actions">

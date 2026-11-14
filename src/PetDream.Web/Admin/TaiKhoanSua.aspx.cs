@@ -61,6 +61,11 @@ public partial class QuanTriTaiKhoanSua : TrangTaiKhoan
     {
         ThucHien(lit_thongbao, () =>
         {
+            if (KiemTraVanBanQuanTri.CoDauNgoacNhon(txt_hoten.Text))
+            {
+                lit_thongbao.Text = "Họ tên không được chứa dấu < hoặc >.";
+                return;
+            }
             HoSoTaiKhoan hoSo;
             string loi;
             if (!HoSoTaiKhoan.ThuDoc(txt_hoten.Text, txt_email.Text, txt_dienthoai.Text, out hoSo, out loi))
