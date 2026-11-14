@@ -4,24 +4,58 @@
 <head runat="server">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>PetDream | Quản trị</title>
+    <title>PetDream | Quản trị cửa hàng</title>
     <link href="~/Content/site.css" rel="stylesheet" runat="server" />
+    <link href="~/Content/admin-catalog.css" rel="stylesheet" runat="server" />
+    <link href="~/Content/admin-accounts.css" rel="stylesheet" runat="server" />
+    <link href="~/Content/admin-shell.css" rel="stylesheet" runat="server" />
+    <link href="~/Content/admin-orders.css" rel="stylesheet" runat="server" />
 </head>
-<body>
+<body class="admin-body">
+    <a class="admin-skip" href="#admin-main">Đến nội dung chính</a>
     <form id="form_quantri" runat="server">
         <asp:ScriptManager ID="script_quantri" runat="server" EnableCdn="false">
             <Scripts><asp:ScriptReference Name="jquery" /></Scripts>
         </asp:ScriptManager>
-        <header class="site-header">
-            <a class="brand" href="<%= ResolveUrl("~/Admin/Default.aspx") %>">PetDream<span>Khung quản trị</span></a>
-            <nav class="account-nav" aria-label="Điều hướng tài khoản">
-                <a href="<%= ResolveUrl("~/Default.aspx") %>">Trang chủ</a>
-                <a href="<%= ResolveUrl("~/DangXuat.aspx") %>">Đăng xuất</a>
-            </nav>
+        <% var nguoiDung = XacThucTaiKhoan.HienTai(Context);
+           var laAdmin = nguoiDung != null && nguoiDung.VaiTro == "admin";
+           var duongDan = Request.AppRelativeCurrentExecutionFilePath.ToLowerInvariant(); %>
+        <header class="admin-topbar">
+            <a class="admin-brand" href="<%= ResolveUrl("~/Admin/Default.aspx") %>" aria-label="PetDream - Tổng quan">
+                <span class="admin-brand-mark" aria-hidden="true">✦</span>
+                <span>PetDream<small>QUẢN TRỊ CỬA HÀNG</small></span>
+            </a>
+            <div class="admin-topbar-right">
+                <a class="admin-store-link" href="<%= ResolveUrl("~/Default.aspx") %>">Xem cửa hàng <span aria-hidden="true">↗</span></a>
+                <span class="admin-user-icon" aria-hidden="true">●</span>
+                <span class="admin-user-name"><strong><%= System.Web.HttpUtility.HtmlEncode(nguoiDung == null ? "" : nguoiDung.HoTen) %></strong><small><%= laAdmin ? "Quản trị viên" : "Nhân viên" %></small></span>
+                <a class="admin-logout" href="<%= ResolveUrl("~/DangXuat.aspx") %>">Đăng xuất</a>
+            </div>
         </header>
-        <main class="container admin-content">
-            <asp:ContentPlaceHolder ID="AdminContent" runat="server" />
-        </main>
+        <div class="admin-layout">
+            <aside class="admin-sidebar">
+                <div class="admin-side-intro"><span>KHÔNG GIAN QUẢN LÝ</span><strong>Vận hành cửa hàng</strong></div>
+                <nav class="admin-navigation" aria-label="Chức năng quản trị">
+                    <span class="admin-nav-label">TỔNG QUAN</span>
+                    <a class="admin-nav-item <%= duongDan.EndsWith("/default.aspx") ? "is-active" : "" %>" href="<%= ResolveUrl("~/Admin/Default.aspx") %>"><span class="admin-nav-icon" aria-hidden="true">▦</span><span>Tổng quan</span></a>
+                    <span class="admin-nav-label">QUẢN LÝ CỬA HÀNG</span>
+                    <a class="admin-nav-item <%= duongDan.Contains("/loai") ? "is-active" : "" %>" href="<%= ResolveUrl("~/Admin/Loai.aspx") %>"><span class="admin-nav-icon" aria-hidden="true">◉</span><span>Danh mục loài</span></a>
+                    <a class="admin-nav-item <%= duongDan.Contains("/thucung") ? "is-active" : "" %>" href="<%= ResolveUrl("~/Admin/ThuCung.aspx") %>"><span class="admin-nav-icon" aria-hidden="true">♧</span><span>Thú cưng</span></a>
+                    <a class="admin-nav-item <%= duongDan.Contains("donhang.aspx") ? "is-active" : "" %>" href="<%= ResolveUrl("~/Admin/DonHang.aspx") %>"><span class="admin-nav-icon" aria-hidden="true">▤</span><span>Đơn hàng</span></a>
+                    <a class="admin-nav-item <%= duongDan.Contains("/danhgia") ? "is-active" : "" %>" href="<%= ResolveUrl("~/Admin/DanhGia.aspx") %>"><span class="admin-nav-icon" aria-hidden="true">☆</span><span>Đánh giá</span></a>
+                    <span class="admin-nav-label">HỆ THỐNG</span>
+                    <% if (laAdmin) { %>
+                    <a class="admin-nav-item <%= duongDan.Contains("/taikhoan") ? "is-active" : "" %>" href="<%= ResolveUrl("~/Admin/TaiKhoan.aspx") %>"><span class="admin-nav-icon" aria-hidden="true">♙</span><span>Tài khoản</span></a>
+                    <% } else { %>
+                    <span class="admin-nav-item is-locked" aria-disabled="true" title="Chỉ quản trị viên có quyền truy cập"><span class="admin-nav-icon" aria-hidden="true">♙</span><span>Tài khoản</span><span class="admin-lock" aria-label="Không có quyền truy cập">🔒</span></span>
+                    <% } %>
+                </nav>
+                <p class="admin-sidebar-note">Mỗi người bạn nhỏ xứng đáng có một mái ấm.</p>
+            </aside>
+            <main id="admin-main" class="admin-content">
+                <asp:ContentPlaceHolder ID="AdminContent" runat="server" />
+            </main>
+        </div>
     </form>
 </body>
 </html>

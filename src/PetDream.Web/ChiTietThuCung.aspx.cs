@@ -3,15 +3,21 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
-using System.Web.UI;
+using System.Linq;
+using System.Web;
 
-public partial class ChiTietThuCung : Page
+public partial class ChiTietThuCung : TrangCoCsrf
 {
+    protected override bool BaoVeBieuMau
+    {
+        get { return Request.IsSecureConnection; }
+    }
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (IsPostBack) return;
         int id;
-        if (!int.TryParse(Request.QueryString["id"], NumberStyles.None, CultureInfo.InvariantCulture, out id) || id < 1)
+        if (!DocId(out id))
         {
             BaoLoi(404, "Hồ sơ bạn tìm không tồn tại hoặc không còn được giới thiệu.");
             return;
@@ -25,6 +31,7 @@ public partial class ChiTietThuCung : Page
                 return;
             }
             DataRow pet = duLieu.Tables[0].Rows[0];
+            btn_themgio.Visible = Request.IsSecureConnection && DangBan(pet);
             Title = Convert.ToString(pet["Ten"]) + " | PetDream";
             lit_breadcrumb.Text = lit_ten.Text = Convert.ToString(pet["Ten"]);
             lit_giong.Text = Convert.ToString(pet["Giong"]);
@@ -40,7 +47,7 @@ public partial class ChiTietThuCung : Page
             lit_kichthuoc.Text = Convert.ToString(pet["KichThuoc"]);
             lnk_loai.NavigateUrl = "ThuCung.aspx?loai=" + pet["LoaiId"];
             DataTable anh = duLieu.Tables[1];
-            anh_chinh.Attributes["aria-label"] = "Ảnh minh họa " + Convert.ToString(pet["Ten"]);
+            anh_chinh.Attributes["aria-label"] = "Ảnh " + Convert.ToString(pet["Ten"]);
             if (anh.Rows.Count > 0)
             {
                 DataRow chon = anh.Rows[0];
@@ -49,6 +56,8 @@ public partial class ChiTietThuCung : Page
                     foreach (DataRow row in anh.Rows)
                         if (Convert.ToInt32(row["Id"]) == anhId) chon = row;
                 anh_chinh.Attributes["style"] = HienThiThuCung.Anh(chon["DuongDan"], chon["OAnh"]);
+                chu_thich_anh.Visible = System.Text.RegularExpressions.Regex.IsMatch(
+                    Convert.ToString(chon["DuongDan"]), @"\A~/Images/pets/(dogs|cats|hamsters)\.png\z");
                 rpt_anh.Visible = anh.Rows.Count > 1;
                 rpt_anh.DataSource = anh;
                 rpt_anh.DataBind();
@@ -58,6 +67,69 @@ public partial class ChiTietThuCung : Page
         }
         catch (SqlException ex) { LoiDuLieu(ex); }
         catch (ConfigurationErrorsException ex) { LoiDuLieu(ex); }
+
+        if (pnl_chitiet.Visible)
+            HienThiDanhGiaCongKhai(id);
+    }
+
+    private void HienThiDanhGiaCongKhai(int id)
+    {
+        try
+        {
+            DataTable danhGia = new DAO_DANH_GIA().CongKhai(id);
+            lit_danhgia.Text = danhGia.Rows.Count == 0
+                ? "Chưa có đánh giá công khai."
+                : danhGia.Rows.Cast<DataRow>().Average(dong => (byte)dong["SoSao"]).ToString("0.0", CultureInfo.GetCultureInfo("vi-VN"))
+                    + "/5 · " + danhGia.Rows.Count + " đánh giá";
+            rpt_danhgia.DataSource = danhGia;
+            rpt_danhgia.DataBind();
+        }
+        catch (SqlException ex) { LoiDanhGia(ex); }
+        catch (ConfigurationErrorsException ex) { LoiDanhGia(ex); }
+    }
+
+    private void LoiDanhGia(Exception ex)
+    {
+        Trace.Warn("DanhGia", "Không đọc được đánh giá công khai.", ex);
+        lit_danhgia.Text = "Đánh giá tạm thời chưa sẵn sàng.";
+    }
+
+    protected void btn_themgio_Click(object sender, EventArgs e)
+    {
+        if (!Request.IsSecureConnection || Request.HttpMethod != "POST")
+            throw new HttpException(403, "Vui lòng mở trang bằng HTTPS để thêm vào giỏ.");
+
+        int id;
+        if (!DocId(out id))
+        {
+            BaoLoi(404, "Hồ sơ bạn tìm không tồn tại hoặc không còn được giới thiệu.");
+            return;
+        }
+
+        try
+        {
+            DataTable ketQua = new DAO_THU_CUNG().DocGioHang(new[] { id });
+            if (ketQua.Rows.Count == 0 || !DangBan(ketQua.Rows[0]))
+            {
+                ChuyenTrang("~/GioHang.aspx?them=khongcon");
+                return;
+            }
+
+            GioHangPhien.Them(Session, id);
+            ChuyenTrang("~/GioHang.aspx?them=1");
+        }
+        catch (SqlException ex) { LoiDuLieu(ex); }
+        catch (ConfigurationErrorsException ex) { LoiDuLieu(ex); }
+    }
+
+    private bool DocId(out int id)
+    {
+        return int.TryParse(Request.QueryString["id"], NumberStyles.None, CultureInfo.InvariantCulture, out id) && id > 0;
+    }
+
+    private static bool DangBan(DataRow pet)
+    {
+        return Convert.ToString(pet["TrangThai"]) == "dang_ban";
     }
 
     private void LoiDuLieu(Exception ex)

@@ -37,23 +37,34 @@ public partial class UngDung : HttpApplication
         string trang = Request.AppRelativeCurrentExecutionFilePath;
         bool quanTri = trang.Equals("~/Admin", StringComparison.OrdinalIgnoreCase)
             || trang.StartsWith("~/Admin/", StringComparison.OrdinalIgnoreCase);
-        bool canTaiKhoan = quanTri || LaTrang(trang, "TaiKhoan")
+        bool trangDonHang = LaTrang(trang, "DonHang") || LaTrang(trang, "ChiTietDonHang") || LaTrang(trang, "DanhGia");
+        bool canTaiKhoan = quanTri || trangDonHang || LaTrang(trang, "DatHang") || LaTrang(trang, "TaiKhoan")
             || LaTrang(trang, "DoiMatKhau") || LaTrang(trang, "DangXuat");
         bool trangXacThuc = canTaiKhoan || LaTrang(trang, "DangNhap") || LaTrang(trang, "DangKy");
         DanhTinhTaiKhoan taiKhoan = XacThucTaiKhoan.HienTai(Context);
+
+        if (LaTrang(trang, "GioHang") && !Request.IsSecureConnection)
+        {
+            TraLoi(403, "Vui lòng sử dụng kết nối bảo mật HTTPS để mở giỏ hàng.");
+            return;
+        }
 
         if (trangXacThuc || taiKhoan != null)
             Response.Cache.SetNoStore();
 
         if (trangXacThuc && !Request.IsSecureConnection)
         {
-            TraLoi(403, "Vui lòng mở PetDream bằng địa chỉ HTTPS của IIS Express để sử dụng tài khoản.");
+            TraLoi(403, "Vui lòng sử dụng kết nối bảo mật HTTPS để truy cập tài khoản.");
             return;
         }
 
         if (canTaiKhoan && taiKhoan == null)
         {
-            string dich = quanTri ? "~/DangNhap.aspx?tiep=quantri" : "~/DangNhap.aspx?tiep=taikhoan";
+            string tiep = quanTri ? "quantri"
+                : LaTrang(trang, "DatHang") ? "dathang"
+                : trangDonHang ? "donhang"
+                : "taikhoan";
+            string dich = "~/DangNhap.aspx?tiep=" + tiep;
             Response.Redirect(VirtualPathUtility.ToAbsolute(dich), false);
             CompleteRequest();
             return;

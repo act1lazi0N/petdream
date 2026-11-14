@@ -40,9 +40,7 @@
                         </ItemTemplate>
                     </asp:Repeater>
                 </div>
-                <p class="image-caption">
-                    Ảnh minh họa AI · Hồ sơ mẫu cho đồ án
-                </p>
+                <p id="chu_thich_anh" runat="server" visible="false" class="image-caption">Hình ảnh minh họa</p>
             </div>
             <div class="detail-copy">
                 <p class="eyebrow">
@@ -98,7 +96,11 @@
                 <p class="preserve-lines">
                     <asp:Literal ID="lit_mota" runat="server" Mode="Encode" />
                 </p>
-                <asp:HyperLink ID="lnk_loai" runat="server" CssClass="button button-light" Text="Gặp những người bạn cùng loài ↗" />
+                <div class="detail-actions">
+                    <asp:Button ID="btn_themgio" runat="server" CssClass="button" Text="Thêm vào giỏ"
+                        CausesValidation="false" OnClick="btn_themgio_Click" />
+                    <asp:HyperLink ID="lnk_loai" runat="server" CssClass="button button-light" Text="Gặp những người bạn cùng loài ↗" />
+                </div>
             </div>
         </div>
         <section class="detail-notes" aria-label="Thông tin chăm sóc">
@@ -133,6 +135,22 @@
                     Hãy xác minh hồ sơ sức khỏe và lịch chăm sóc thực tế trước khi quyết định đón thú cưng.
                 </p>
             </article>
+        </section>
+        <section class="section pet-reviews" aria-labelledby="tieude-danhgia">
+            <h2 id="tieude-danhgia">Đánh giá</h2>
+            <p><asp:Literal ID="lit_danhgia" runat="server" Mode="Encode" /></p>
+            <asp:Repeater ID="rpt_danhgia" runat="server">
+                <ItemTemplate>
+                    <article>
+                        <h3><%#: Eval("TenNguoiNhap") %></h3>
+                        <p>
+                            <strong><%#: Eval("SoSao") %>/5 sao</strong>
+                            <asp:PlaceHolder runat="server" Visible='<%# (bool)Eval("QuanTriNhap") %>'> · Do quản trị nhập</asp:PlaceHolder>
+                        </p>
+                        <p class="preserve-lines"><%#: Eval("NoiDung") %></p>
+                    </article>
+                </ItemTemplate>
+            </asp:Repeater>
         </section>
         <asp:Panel ID="pnl_goiy" runat="server" CssClass="section">
             <div class="section-heading">
