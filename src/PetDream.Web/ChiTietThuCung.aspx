@@ -40,9 +40,7 @@
                         </ItemTemplate>
                     </asp:Repeater>
                 </div>
-                <p class="image-caption">
-                    Ảnh minh họa AI · Hồ sơ mẫu cho đồ án
-                </p>
+                <p id="chu_thich_anh" runat="server" visible="false" class="image-caption">Hình ảnh minh họa</p>
             </div>
             <div class="detail-copy">
                 <p class="eyebrow">

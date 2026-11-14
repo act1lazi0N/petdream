@@ -12,12 +12,15 @@ Phong cách giao diện hồng/tím pastel, lấy cảm hứng từ mẫu PetDre
 - Đăng ký, đăng nhập bằng email hoặc số điện thoại, sửa hồ sơ, đổi mật khẩu và đăng xuất.
 - Giỏ hàng theo phiên, thêm/xóa từ website và giữ giỏ khi đăng nhập. Tạm tính dựa trên giá hiện tại của các bé đang tìm chủ.
 - Đặt hàng COD với phí giao 30.000đ: giữ chỗ các bé trong một transaction, chặn gửi lặp, báo khi giá đổi. Khách xem lịch sử, chi tiết và hủy đơn khi còn chờ xác nhận.
-- Trang liên hệ kiểm tra họ tên, email, điện thoại, chủ đề và nội dung rồi báo gửi thành công; bản đồ án không gửi email hay lưu lời nhắn.
+- Trang liên hệ hiển thị trạng thái chưa khả dụng cho đến khi cửa hàng cấu hình kênh tiếp nhận lời nhắn.
 - Khu vực quản trị kiểm tra vai trò admin/staff phía máy chủ.
+- Quản lý loài và hồ sơ thú cưng trong khu vực quản trị, gồm ảnh tải lên và các ràng buộc với đơn hàng.
+- Admin quản lý tài khoản: xem, tạo, sửa, phân quyền, khóa/mở khóa và xóa mềm; bảo vệ admin hoạt động cuối cùng.
+- Trang tổng quan quản trị hiển thị số liệu thú cưng và đơn hàng từ cơ sở dữ liệu; mã loài, thú cưng và đơn hàng được cấp tự động.
 - Dependency cố định phiên bản, restore bằng NuGet trong IDE; JavaScript được phục vụ local.
 - Quy ước mã nguồn, thư mục database và tài liệu kiến trúc.
 
-Quản trị CRUD, xử lý đơn phía quản trị và đánh giá thuộc các gói tiếp theo. Hồ sơ và ảnh AI là dữ liệu minh họa cho đồ án.
+Xử lý đơn phía quản trị và đánh giá thuộc các gói tiếp theo. Hồ sơ và ảnh AI là dữ liệu minh họa cho đồ án.
 
 ## Chạy bằng Visual Studio
 
@@ -25,7 +28,7 @@ Yêu cầu Windows, Visual Studio với workload **ASP.NET and web development**
 
 1. Mở `PetDream.sln`.
 2. Chuột phải solution → **Restore NuGet Packages**. Cần Internet cho lần tải package đầu tiên.
-3. Mở SSMS hoặc SQL Server Object Explorer trong Visual Studio, kết nối `(localdb)\MSSQLLocalDB` bằng Windows Authentication. Chạy 001–005, 007, 008 và 022. Nếu đã chạy các file trước, chỉ cần chạy tiếp file mới. [Hướng dẫn database](database/README.md).
+3. Mở SSMS hoặc SQL Server Object Explorer trong Visual Studio, kết nối `(localdb)\MSSQLLocalDB` bằng Windows Authentication. Chạy lần lượt 001–005, 007, 008, 022, 011, 010, 013, 025 và 024. Nếu đã chạy các file trước, chạy các file mới và chạy lại 010 để cập nhật procedure. [Hướng dẫn database](database/README.md).
 4. Chọn `PetDream.Web` làm **StartUp Project**, chọn `Default.aspx` làm **Start Page** nếu IDE chưa chọn sẵn.
 5. Bật SSL cho `PetDream.Web` trong IIS Express. Nếu Visual Studio chưa sinh URL HTTPS, dừng debug rồi thêm binding bên dưới vào `<bindings>` của site `PetDream.Web` trong `.vs/PetDream/config/applicationhost.config`. Chọn một cổng trống trong dải 44300–44399. [Hướng dẫn SSL của IIS Express](https://learn.microsoft.com/iis/extensions/using-iis-express/running-iis-express-without-administrative-privileges).
 6. Chọn **Build Solution** rồi nhấn **F5** hoặc **Ctrl+F5**. Mở `https://localhost:44387/` theo cổng HTTPS đã cấu hình. Dùng chứng chỉ phát triển của IIS Express cho localhost.
@@ -58,11 +61,16 @@ jQuery và source map trong `Scripts/vendor` được commit cùng license heade
 Để dùng cấu hình riêng, sao chép file mẫu thành `ConnectionStrings.config` trong cùng thư mục bằng IDE, rồi đổi `configSource` trong `Web.config` sang `ConnectionStrings.config`. File local được Git bỏ qua. Trước khi chia sẻ thay đổi, giữ `Web.config` trỏ về file mẫu để người khác clone vẫn chạy được.
 
 Nếu môi trường yêu cầu SQL Authentication, chỉ chỉnh **file local**: bỏ `Integrated Security=True`, thêm `User ID` và `Password` của máy chạy. Không đưa mật khẩu thật vào file mẫu hoặc README.
+
 Mẫu **chỉ dành cho LocalDB trên cùng máy**, dùng `Encrypt=False;TrustServerCertificate=False` vì instance kiểm thử báo không hỗ trợ mã hóa khi dùng ADO.NET. Không dùng mẫu này cho SQL Server từ xa: tạo cấu hình riêng với `Encrypt=True` và chứng chỉ hợp lệ. `Command Timeout` từ SSMS không phải khóa connection string của `System.Data.SqlClient`; DAO đặt timeout 15 giây trên `SqlCommand`.
+
+Ảnh thú cưng tải lên được lưu cục bộ trong `src/PetDream.Web/App_Data/Uploads` và không đưa vào Git. Khi chuyển máy hoặc sao lưu dữ liệu, cần sao lưu thư mục ảnh cùng database; tài khoản chạy ứng dụng phải có quyền ghi thư mục này. Ảnh mẫu đi kèm source vẫn được giữ nguyên.
 
 Nếu database chưa được chuẩn bị hoặc không kết nối được, trang trả HTTP 503 với thông báo chung; không tự tạo database hoặc thay bằng dữ liệu giả. Đầu vào bộ lọc sai trả 400; hồ sơ không tồn tại, ngừng bán hoặc xóa mềm trả 404.
 
 ## Quy tắc nhánh
+
+- Các nhánh quản trị đang chia sẻ nền `features/admin-dashboard` để giữ thống nhất giao diện, phân quyền và dữ liệu. Trong khi phần này chưa được tích hợp vào `develop`, nhánh quản trị mới được tạo từ `develop` mới nhất rồi kết hợp nhánh nền này; không lấy code từ `main`.
 
 - Phát triển trên `develop`. Kế hoạch nằm tại `docs/plans/petdream-implementation.md` và chỉ được theo dõi trên nhánh này.
 - `/docs/plans/` được ignore để tránh vô tình thêm file mới. Khi chủ động thêm kế hoạch trên `develop`, dùng `git add -f` cho đúng file; sửa file đã được theo dõi thì stage bình thường.

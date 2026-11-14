@@ -45,7 +45,7 @@ public partial class UngDung : HttpApplication
 
         if (LaTrang(trang, "GioHang") && !Request.IsSecureConnection)
         {
-            TraLoi(403, "Vui lòng mở PetDream bằng địa chỉ HTTPS của IIS Express để sử dụng giỏ hàng.");
+            TraLoi(403, "Vui lòng sử dụng kết nối bảo mật HTTPS để mở giỏ hàng.");
             return;
         }
 
@@ -54,7 +54,7 @@ public partial class UngDung : HttpApplication
 
         if (trangXacThuc && !Request.IsSecureConnection)
         {
-            TraLoi(403, "Vui lòng mở PetDream bằng địa chỉ HTTPS của IIS Express để sử dụng tài khoản.");
+            TraLoi(403, "Vui lòng sử dụng kết nối bảo mật HTTPS để truy cập tài khoản.");
             return;
         }
 
