@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 /// <summary>
 /// Kiểm tra biểu mẫu liên hệ phía server. V1 chỉ kiểm tra và báo thành công, không gửi email hoặc lưu nội dung.
 /// </summary>
-public class ThongTinLienHe
+public static class ThongTinLienHe
 {
     public static readonly IReadOnlyDictionary<string, string> ChuDe = new Dictionary<string, string>
     {
@@ -14,16 +14,9 @@ public class ThongTinLienHe
         { "khac", "Góp ý khác" }
     };
 
-    public string HoTen { get; set; }
-    public string Email { get; set; }
-    public string DienThoai { get; set; }
-    public string MaChuDe { get; set; }
-    public string NoiDung { get; set; }
-
-    public static bool ThuDoc(string hoTen, string email, string dienThoai, string maChuDe, string noiDung,
-        out ThongTinLienHe thongTin, out string loi)
+    public static bool HopLe(string hoTen, string email, string dienThoai, string maChuDe, string noiDung,
+        out string loi)
     {
-        thongTin = null;
         hoTen = (hoTen ?? "").Trim();
         string emailChuan = HoSoTaiKhoan.ChuanHoaEmail(email);
         dienThoai = (dienThoai ?? "").Trim();
@@ -41,14 +34,8 @@ public class ThongTinLienHe
         else if (noiDung.Length < 10 || noiDung.Length > 2000 || Regex.IsMatch(noiDung, @"[\p{C}-[\n]]"))
             loi = "Nội dung cần từ 10 đến 2.000 ký tự và không chứa ký tự điều khiển.";
         else
-        {
-            thongTin = new ThongTinLienHe
-            {
-                HoTen = hoTen, Email = emailChuan, DienThoai = dienThoaiChuan, MaChuDe = maChuDe, NoiDung = noiDung
-            };
             loi = null;
-        }
 
-        return thongTin != null;
+        return loi == null;
     }
 }

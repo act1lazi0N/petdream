@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.UI.WebControls;
 
 public partial class LienHe : TrangCoCsrf
@@ -21,7 +22,7 @@ public partial class LienHe : TrangCoCsrf
             ddl_chude.Items.Add(new ListItem(chuDe.Value, chuDe.Key));
 
         if (Request.QueryString["gui"] == "1")
-            lit_thongbao.Text = "Chức năng tiếp nhận lời nhắn hiện chưa khả dụng.";
+            lit_thongbao.Text = "Biểu mẫu thử nghiệm đã gửi thành công.";
 
         // Điền sẵn thông tin khi khách đã đăng nhập (chỉ có trên HTTPS).
         DanhTinhTaiKhoan taiKhoan = XacThucTaiKhoan.HienTai(Context);
@@ -35,11 +36,30 @@ public partial class LienHe : TrangCoCsrf
 
     protected void btn_gui_Click(object sender, EventArgs e)
     {
-        // Chưa có kênh tiếp nhận; không thông báo gửi thành công khi chưa lưu hoặc gửi lời nhắn.
-        Response.StatusCode = 503;
-        Response.TrySkipIisCustomErrors = true;
-        lit_thongbao.Text = "Chức năng tiếp nhận lời nhắn hiện chưa khả dụng.";
-        return;
+        if (Request.HttpMethod != "POST")
+            throw new HttpException(405, "Thao tác yêu cầu POST.");
+
+        if (!Page.IsValid)
+        {
+            BaoLoiBieuMau("Vui lòng điền các trường bắt buộc.");
+            return;
+        }
+
+        string loi;
+        if (!ThongTinLienHe.HopLe(txt_hoten.Text, txt_email.Text, txt_dienthoai.Text,
+            ddl_chude.SelectedValue, txt_noidung.Text, out loi))
+        {
+            BaoLoiBieuMau(loi);
+            return;
+        }
+
+        ChuyenTrang("~/LienHe.aspx?gui=1");
     }
 
+    private void BaoLoiBieuMau(string loi)
+    {
+        Response.StatusCode = 400;
+        Response.TrySkipIisCustomErrors = true;
+        lit_thongbao.Text = loi;
+    }
 }

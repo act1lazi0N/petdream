@@ -49,6 +49,8 @@ Seed là dữ liệu demo, thông tin sức khỏe chưa được xác minh. Xem
 
 ## Tài khoản demo cho quản trị
 
+Để chuẩn bị đồng thời khách, staff, admin và một đơn mẫu, làm theo [hướng dẫn nghiệm thu](../docs/demo-acceptance.md). SQL trong thư mục `demo` chạy riêng sau khi đã tạo tài khoản.
+
 Trên LocalDB của đồ án, đăng ký một tài khoản qua `/DangKy.aspx` bằng email demo và mật khẩu tự đặt. Sau đó đổi vai trò của đúng tài khoản bằng truy vấn sau. Thay email bằng địa chỉ đã đăng ký và chọn `admin` hoặc `staff`.
 
 ```sql

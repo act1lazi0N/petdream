@@ -12,10 +12,10 @@
                     <dt>Điện thoại</dt><dd>Đang cập nhật</dd>
                     <dt>Địa chỉ</dt><dd>Đang cập nhật</dd>
                 </dl>
-                <p class="contact-note">Chức năng tiếp nhận lời nhắn hiện chưa khả dụng.</p>
             </aside>
             <div class="contact-form">
                 <h2>Gửi lời nhắn</h2>
+                <p class="contact-note">Biểu mẫu dùng để thử luồng liên hệ. Lời nhắn không được chuyển đến cửa hàng.</p>
                 <div class="account-message" role="status"><asp:Literal ID="lit_thongbao" runat="server" Mode="Encode" /></div>
                 <div class="account-field">
                     <asp:Label runat="server" AssociatedControlID="txt_hoten" Text="Họ tên" />
@@ -43,11 +43,11 @@
                 </div>
                 <div class="account-field">
                     <asp:Label runat="server" AssociatedControlID="txt_noidung" Text="Nội dung" />
-                    <asp:TextBox ID="txt_noidung" runat="server" TextMode="MultiLine" Rows="6" MaxLength="2000" ValidateRequestMode="Disabled" />
+                    <asp:TextBox ID="txt_noidung" runat="server" TextMode="MultiLine" Rows="6" maxlength="2000" ValidateRequestMode="Disabled" />
                     <asp:RequiredFieldValidator runat="server" ControlToValidate="txt_noidung" Display="Dynamic"
                         CssClass="field-error" ErrorMessage="Vui lòng nhập nội dung." />
                 </div>
-                <asp:Button ID="btn_gui" runat="server" CssClass="button" Text="Gửi lời nhắn" Enabled="false" OnClick="btn_gui_Click" />
+                <asp:Button ID="btn_gui" runat="server" CssClass="button" Text="Gửi lời nhắn" OnClick="btn_gui_Click" />
             </div>
         </div>
     </section>

@@ -12,7 +12,7 @@ Phong cách giao diện hồng/tím pastel, lấy cảm hứng từ mẫu PetDre
 - Đăng ký, đăng nhập bằng email hoặc số điện thoại, sửa hồ sơ, đổi mật khẩu và đăng xuất.
 - Giỏ hàng theo phiên, thêm/xóa từ website và giữ giỏ khi đăng nhập. Tạm tính dựa trên giá hiện tại của các bé đang tìm chủ.
 - Đặt hàng COD với phí giao 30.000đ: giữ chỗ các bé trong một transaction, chặn gửi lặp, báo khi giá đổi. Khách xem lịch sử, chi tiết và hủy đơn khi còn chờ xác nhận.
-- Trang liên hệ hiển thị trạng thái chưa khả dụng cho đến khi cửa hàng cấu hình kênh tiếp nhận lời nhắn.
+- Trang liên hệ kiểm tra dữ liệu và xác nhận gửi biểu mẫu thử nghiệm. Lời nhắn không được lưu hoặc gửi qua email.
 - Khu vực quản trị kiểm tra vai trò admin/staff phía máy chủ.
 - Quản lý loài và hồ sơ thú cưng trong khu vực quản trị, gồm ảnh tải lên và các ràng buộc với đơn hàng.
 - Admin quản lý tài khoản: xem, tạo, sửa, phân quyền, khóa/mở khóa và xóa mềm; bảo vệ admin hoạt động cuối cùng.
@@ -57,6 +57,8 @@ NuGet restore vào thư mục `packages` cạnh solution. Các file `Bin/*.dll.r
 jQuery và source map trong `Scripts/vendor` được commit cùng license header vì package restore không khôi phục content vào Web Site. Khi nâng phiên bản trong **Manage NuGet Packages**, kiểm tra lại tham chiếu `.dll.refresh`, binding redirect và cập nhật jQuery trong `Scripts/vendor` cùng mapping ở `Global.asax.cs`. Không dùng `dotnet add package` hoặc `dotnet run` cho Web Site này.
 
 ## Cấu hình database
+
+Để chuẩn bị dữ liệu riêng và trình diễn đủ ba vai trò, xem [hướng dẫn nghiệm thu và checklist chấm điểm](docs/demo-acceptance.md).
 
 `Web.config` mặc định dùng `ConnectionStrings.example.config`, chứa Windows Authentication đến `(localdb)\MSSQLLocalDB`, database `PetDream`. Không có mật khẩu trong cấu hình được commit. Kết nối đã được kiểm tra bằng ADO.NET và IIS Express trên máy phát triển.
 
