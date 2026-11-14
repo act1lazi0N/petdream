@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.Linq;
 using System.Web;
 
 public partial class ChiTietThuCung : TrangCoCsrf
@@ -66,6 +67,31 @@ public partial class ChiTietThuCung : TrangCoCsrf
         }
         catch (SqlException ex) { LoiDuLieu(ex); }
         catch (ConfigurationErrorsException ex) { LoiDuLieu(ex); }
+
+        if (pnl_chitiet.Visible)
+            HienThiDanhGiaCongKhai(id);
+    }
+
+    private void HienThiDanhGiaCongKhai(int id)
+    {
+        try
+        {
+            DataTable danhGia = new DAO_DANH_GIA().CongKhai(id);
+            lit_danhgia.Text = danhGia.Rows.Count == 0
+                ? "Chưa có đánh giá công khai."
+                : danhGia.Rows.Cast<DataRow>().Average(dong => (byte)dong["SoSao"]).ToString("0.0", CultureInfo.GetCultureInfo("vi-VN"))
+                    + "/5 · " + danhGia.Rows.Count + " đánh giá";
+            rpt_danhgia.DataSource = danhGia;
+            rpt_danhgia.DataBind();
+        }
+        catch (SqlException ex) { LoiDanhGia(ex); }
+        catch (ConfigurationErrorsException ex) { LoiDanhGia(ex); }
+    }
+
+    private void LoiDanhGia(Exception ex)
+    {
+        Trace.Warn("DanhGia", "Không đọc được đánh giá công khai.", ex);
+        lit_danhgia.Text = "Đánh giá tạm thời chưa sẵn sàng.";
     }
 
     protected void btn_themgio_Click(object sender, EventArgs e)

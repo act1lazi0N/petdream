@@ -331,3 +331,8 @@ textarea:focus-visible { outline:3px solid #9561b6; outline-offset:3px; }
 @media (max-width: 520px) {
     .contact-row { grid-template-columns:1fr; }
 }
+.review-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:18px; }
+.pet-reviews { margin-block:32px; }
+.pet-reviews article { max-width:760px; padding:16px 20px; background:#fff; border:1px solid var(--border); border-radius:16px; }
+.pet-reviews article + article { margin-top:12px; }
+.pet-reviews h3, .pet-reviews article p:last-child { margin:0; overflow-wrap:anywhere; }

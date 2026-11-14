@@ -42,7 +42,7 @@
                     <a class="admin-nav-item <%= duongDan.Contains("/loai") ? "is-active" : "" %>" href="<%= ResolveUrl("~/Admin/Loai.aspx") %>"><span class="admin-nav-icon" aria-hidden="true">◉</span><span>Danh mục loài</span></a>
                     <a class="admin-nav-item <%= duongDan.Contains("/thucung") ? "is-active" : "" %>" href="<%= ResolveUrl("~/Admin/ThuCung.aspx") %>"><span class="admin-nav-icon" aria-hidden="true">♧</span><span>Thú cưng</span></a>
                     <a class="admin-nav-item <%= duongDan.Contains("donhang.aspx") ? "is-active" : "" %>" href="<%= ResolveUrl("~/Admin/DonHang.aspx") %>"><span class="admin-nav-icon" aria-hidden="true">▤</span><span>Đơn hàng</span></a>
-                    <span class="admin-nav-item is-locked" aria-disabled="true" title="Chức năng chưa khả dụng"><span class="admin-nav-icon" aria-hidden="true">☆</span><span>Đánh giá</span><span class="admin-lock" aria-label="Chưa khả dụng">🔒</span></span>
+                    <a class="admin-nav-item <%= duongDan.Contains("/danhgia") ? "is-active" : "" %>" href="<%= ResolveUrl("~/Admin/DanhGia.aspx") %>"><span class="admin-nav-icon" aria-hidden="true">☆</span><span>Đánh giá</span></a>
                     <span class="admin-nav-label">HỆ THỐNG</span>
                     <% if (laAdmin) { %>
                     <a class="admin-nav-item <%= duongDan.Contains("/taikhoan") ? "is-active" : "" %>" href="<%= ResolveUrl("~/Admin/TaiKhoan.aspx") %>"><span class="admin-nav-icon" aria-hidden="true">♙</span><span>Tài khoản</span></a>
