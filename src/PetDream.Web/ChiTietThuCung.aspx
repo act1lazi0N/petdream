@@ -136,6 +136,22 @@
                 </p>
             </article>
         </section>
+        <section class="section pet-reviews" aria-labelledby="tieude-danhgia">
+            <h2 id="tieude-danhgia">Đánh giá</h2>
+            <p><asp:Literal ID="lit_danhgia" runat="server" Mode="Encode" /></p>
+            <asp:Repeater ID="rpt_danhgia" runat="server">
+                <ItemTemplate>
+                    <article>
+                        <h3><%#: Eval("TenNguoiNhap") %></h3>
+                        <p>
+                            <strong><%#: Eval("SoSao") %>/5 sao</strong>
+                            <asp:PlaceHolder runat="server" Visible='<%# (bool)Eval("QuanTriNhap") %>'> · Do quản trị nhập</asp:PlaceHolder>
+                        </p>
+                        <p class="preserve-lines"><%#: Eval("NoiDung") %></p>
+                    </article>
+                </ItemTemplate>
+            </asp:Repeater>
+        </section>
         <asp:Panel ID="pnl_goiy" runat="server" CssClass="section">
             <div class="section-heading">
                 <div>

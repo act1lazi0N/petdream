@@ -4,6 +4,9 @@ using System.Globalization;
 
 public partial class ChiTietDonHang : TrangDonHang
 {
+    protected bool CoTheDanhGia { get; private set; }
+    protected int DonHangId { get; private set; }
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (IsPostBack)
@@ -82,6 +85,8 @@ public partial class ChiTietDonHang : TrangDonHang
             lit_tong.Text = HienThiThuCung.Gia(don["TongTien"]);
             pnl_huy.Visible = trangThai == "cho_xac_nhan";
 
+            DonHangId = id;
+            CoTheDanhGia = trangThai == "da_giao" && TaiKhoanHienTai.VaiTro == "khach";
             rpt_be.DataSource = duLieu.Tables[1];
             rpt_be.DataBind();
             pnl_don.Visible = true;
