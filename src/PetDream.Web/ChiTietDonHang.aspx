@@ -41,6 +41,9 @@
                                             <a href='ChiTietThuCung.aspx?id=<%# Eval("ThuCungId") %>'><%#: Eval("TenThuCung") %></a>
                                         </asp:PlaceHolder>
                                         <asp:Literal runat="server" Mode="Encode" Visible='<%# !(bool)Eval("CongKhai") %>' Text='<%# Eval("TenThuCung") %>' />
+                                        <asp:PlaceHolder runat="server" Visible='<%# CoTheDanhGia %>'>
+                                            <p><a href='DanhGia.aspx?don=<%# DonHangId %>&amp;be=<%# Eval("ThuCungId") %>'>Đánh giá <%#: Eval("TenThuCung") %></a></p>
+                                        </asp:PlaceHolder>
                                     </div>
                                     <strong class="cart-price"><%#: HienThiThuCung.Gia(Eval("Gia")) %></strong>
                                 </li>

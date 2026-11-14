@@ -17,6 +17,9 @@ Kết nối `(localdb)\MSSQLLocalDB` bằng Windows Authentication trong **SQL S
 13. `017_admin_orders_procedures.sql`: tạo/cập nhật procedure quản lý đơn; tạo hộ và chuyển trạng thái dùng lại nghiệp vụ F04.
 14. `025_order_code_integrity.sql`: bảo vệ mã đơn duy nhất khi số ID vượt sáu chữ số, giữ nguyên mã hiện có.
 15. `024_admin_dashboard_procedures.sql`: tạo/cập nhật dữ liệu tổng quan quản trị. Chạy sau 011, 016 và 025.
+16. `019_pet_reviews_schema.sql`: tạo bảng DANH_GIA, liên kết chi tiết đơn đã giao và người nhập.
+17. `020_pet_reviews_read.sql`: đọc đánh giá công khai và danh sách kiểm duyệt.
+18. `021_pet_reviews_write.sql`: lưu, duyệt, ẩn và xóa mềm đánh giá, có kiểm tra quyền và phiên bản.
 
 Mỗi file chứa `GO`, chạy bằng cửa sổ SQL Query. Không cần script PowerShell hoặc thao tác tự động lúc website khởi động. Nếu IDE hỏi encoding, chọn UTF-8 để giữ đúng tiếng Việt.
 
@@ -65,3 +68,5 @@ SELECT Id, Email, VaiTro FROM dbo.TAI_KHOAN WHERE Email = @Email;
 Để kiểm tra F05, mở `/Admin/Loai.aspx` hoặc `/Admin/ThuCung.aspx`. Admin được quản lý loài và hồ sơ; staff được xem loài và thêm, sửa, ngừng giới thiệu thú cưng. Chỉ admin được xóa mềm hồ sơ. Không thể xóa loài còn hồ sơ hoặc xóa hồ sơ đang trong đơn hoạt động; trạng thái giữ chỗ và đã bán do đơn hàng quản lý.
 
 Mở `/Admin/DonHang.aspx` để tạo đơn hộ khách, xem và xử lý đơn. Admin và staff được vận hành đơn; chỉ admin được lưu trữ đơn đã hủy. Lưu trữ không xóa đơn hoặc lịch sử của khách.
+
+Với F08, đăng nhập bằng khách có đơn đã giao, mở chi tiết đơn và bấm **Đánh giá** bên cạnh bé. Staff và admin có thể vào `/Admin/DanhGia.aspx` để duyệt hoặc ẩn. Admin có thể nhập đánh giá cho một bé trong đơn đã giao chưa có đánh giá. Các đánh giá do admin tạo lưu người nhập và hiển thị nhãn **Do quản trị nhập**. Trang chi tiết chỉ hiển thị và tính điểm từ các đánh giá đã duyệt.

@@ -37,7 +37,7 @@ public partial class UngDung : HttpApplication
         string trang = Request.AppRelativeCurrentExecutionFilePath;
         bool quanTri = trang.Equals("~/Admin", StringComparison.OrdinalIgnoreCase)
             || trang.StartsWith("~/Admin/", StringComparison.OrdinalIgnoreCase);
-        bool trangDonHang = LaTrang(trang, "DonHang") || LaTrang(trang, "ChiTietDonHang");
+        bool trangDonHang = LaTrang(trang, "DonHang") || LaTrang(trang, "ChiTietDonHang") || LaTrang(trang, "DanhGia");
         bool canTaiKhoan = quanTri || trangDonHang || LaTrang(trang, "DatHang") || LaTrang(trang, "TaiKhoan")
             || LaTrang(trang, "DoiMatKhau") || LaTrang(trang, "DangXuat");
         bool trangXacThuc = canTaiKhoan || LaTrang(trang, "DangNhap") || LaTrang(trang, "DangKy");
