@@ -46,7 +46,7 @@ public partial class ChiTietThuCung : TrangCoCsrf
             lit_kichthuoc.Text = Convert.ToString(pet["KichThuoc"]);
             lnk_loai.NavigateUrl = "ThuCung.aspx?loai=" + pet["LoaiId"];
             DataTable anh = duLieu.Tables[1];
-            anh_chinh.Attributes["aria-label"] = "Ảnh minh họa " + Convert.ToString(pet["Ten"]);
+            anh_chinh.Attributes["aria-label"] = "Ảnh " + Convert.ToString(pet["Ten"]);
             if (anh.Rows.Count > 0)
             {
                 DataRow chon = anh.Rows[0];
@@ -55,6 +55,8 @@ public partial class ChiTietThuCung : TrangCoCsrf
                     foreach (DataRow row in anh.Rows)
                         if (Convert.ToInt32(row["Id"]) == anhId) chon = row;
                 anh_chinh.Attributes["style"] = HienThiThuCung.Anh(chon["DuongDan"], chon["OAnh"]);
+                chu_thich_anh.Visible = System.Text.RegularExpressions.Regex.IsMatch(
+                    Convert.ToString(chon["DuongDan"]), @"\A~/Images/pets/(dogs|cats|hamsters)\.png\z");
                 rpt_anh.Visible = anh.Rows.Count > 1;
                 rpt_anh.DataSource = anh;
                 rpt_anh.DataBind();

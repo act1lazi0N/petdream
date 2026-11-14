@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Web;
 using System.Web.UI.WebControls;
 
 public partial class LienHe : TrangCoCsrf
@@ -22,7 +21,7 @@ public partial class LienHe : TrangCoCsrf
             ddl_chude.Items.Add(new ListItem(chuDe.Value, chuDe.Key));
 
         if (Request.QueryString["gui"] == "1")
-            lit_thongbao.Text = "Cảm ơn bạn! Lời nhắn đã được gửi thành công, PetDream sẽ phản hồi sớm nhất.";
+            lit_thongbao.Text = "Chức năng tiếp nhận lời nhắn hiện chưa khả dụng.";
 
         // Điền sẵn thông tin khi khách đã đăng nhập (chỉ có trên HTTPS).
         DanhTinhTaiKhoan taiKhoan = XacThucTaiKhoan.HienTai(Context);
@@ -36,25 +35,11 @@ public partial class LienHe : TrangCoCsrf
 
     protected void btn_gui_Click(object sender, EventArgs e)
     {
-        if (Request.HttpMethod != "POST")
-            throw new HttpException(405, "Thao tác yêu cầu POST.");
-
-        Page.Validate();
-        if (!Page.IsValid)
-            return;
-
-        ThongTinLienHe thongTin;
-        string loi;
-        if (!ThongTinLienHe.ThuDoc(txt_hoten.Text, txt_email.Text, txt_dienthoai.Text, ddl_chude.SelectedValue,
-            txt_noidung.Text, out thongTin, out loi))
-        {
-            Response.StatusCode = 400;
-            Response.TrySkipIisCustomErrors = true;
-            lit_thongbao.Text = loi;
-            return;
-        }
-
-        // V1 không gửi email/lưu yêu cầu: chuyển hướng sau POST để F5 không gửi lại biểu mẫu và form được làm trống.
-        ChuyenTrang("~/LienHe.aspx?gui=1");
+        // Chưa có kênh tiếp nhận; không thông báo gửi thành công khi chưa lưu hoặc gửi lời nhắn.
+        Response.StatusCode = 503;
+        Response.TrySkipIisCustomErrors = true;
+        lit_thongbao.Text = "Chức năng tiếp nhận lời nhắn hiện chưa khả dụng.";
+        return;
     }
+
 }
