@@ -1,4 +1,4 @@
--- Tong quan dung so lieu that. Chay sau 011 va 007/008.
+-- Tong quan dung so lieu that. Chay sau 011, 016 va 007/008.
 USE PetDream;
 GO
 CREATE OR ALTER PROCEDURE dbo.sp_Admin_TongQuan
@@ -19,8 +19,9 @@ BEGIN
         (SELECT COUNT(*) FROM dbo.DON_HANG WHERE TrangThai = 'cho_xac_nhan') AS DonChoXacNhan;
 
     -- Khong bao gom ten, dien thoai, dia chi hay thong tin tai khoan cua khach.
-    SELECT TOP (5) Ma, NgayDat, TrangThai, TongTien
+    SELECT TOP (5) Id, Ma, NgayDat, TrangThai, TongTien
     FROM dbo.DON_HANG
+    WHERE DaLuuTru = 0
     ORDER BY NgayDat DESC, Id DESC;
 END;
 GO

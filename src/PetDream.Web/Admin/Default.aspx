@@ -36,7 +36,7 @@
         </div>
         <div class="dashboard-grid">
             <section class="dashboard-panel dashboard-orders">
-                <div class="dashboard-panel-heading"><div><p class="dashboard-kicker">ĐƠN HÀNG</p><h2>Đơn gần đây</h2></div><span class="dashboard-subtle">5 đơn mới nhất</span></div>
+                <div class="dashboard-panel-heading"><div><p class="dashboard-kicker">ĐƠN HÀNG</p><h2>Đơn gần đây</h2></div><a class="dashboard-inline-link" href="DonHang.aspx">Xem tất cả →</a></div>
                 <asp:Panel ID="pnl_khongdon" runat="server" Visible="false" CssClass="dashboard-empty">Chưa có đơn hàng nào.</asp:Panel>
                 <asp:Panel ID="pnl_donhang" runat="server" Visible="false">
                     <p class="dashboard-table-hint">Vuốt ngang hoặc dùng phím mũi tên để xem thêm.</p>
@@ -44,7 +44,7 @@
                     <table class="dashboard-table">
                         <thead><tr><th scope="col">Mã đơn</th><th scope="col">Ngày đặt</th><th scope="col">Trạng thái</th><th scope="col">Tổng tiền</th></tr></thead>
                         <tbody><asp:Repeater ID="rpt_donhang" runat="server"><ItemTemplate>
-                            <tr><td class="dashboard-order-code"><%#: Eval("Ma") %></td><td><%#: HienThiDonHang.Ngay(Eval("NgayDat")) %></td>
+                            <tr><td class="dashboard-order-code"><a href='ChiTietDonHang.aspx?id=<%#: Eval("Id") %>'><%#: Eval("Ma") %></a></td><td><%#: HienThiDonHang.Ngay(Eval("NgayDat")) %></td>
                                 <td><span class='<%#: HienThiDonHang.LopTrangThai(Eval("TrangThai")) %>'><%#: HienThiDonHang.TrangThai(Eval("TrangThai")) %></span></td>
                                 <td><%#: HienThiThuCung.Gia(Eval("TongTien")) %></td></tr>
                         </ItemTemplate></asp:Repeater></tbody>

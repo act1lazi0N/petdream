@@ -9,6 +9,7 @@
     <link href="~/Content/admin-catalog.css" rel="stylesheet" runat="server" />
     <link href="~/Content/admin-accounts.css" rel="stylesheet" runat="server" />
     <link href="~/Content/admin-shell.css" rel="stylesheet" runat="server" />
+    <link href="~/Content/admin-orders.css" rel="stylesheet" runat="server" />
 </head>
 <body class="admin-body">
     <a class="admin-skip" href="#admin-main">Đến nội dung chính</a>
@@ -40,7 +41,7 @@
                     <span class="admin-nav-label">QUẢN LÝ CỬA HÀNG</span>
                     <a class="admin-nav-item <%= duongDan.Contains("/loai") ? "is-active" : "" %>" href="<%= ResolveUrl("~/Admin/Loai.aspx") %>"><span class="admin-nav-icon" aria-hidden="true">◉</span><span>Danh mục loài</span></a>
                     <a class="admin-nav-item <%= duongDan.Contains("/thucung") ? "is-active" : "" %>" href="<%= ResolveUrl("~/Admin/ThuCung.aspx") %>"><span class="admin-nav-icon" aria-hidden="true">♧</span><span>Thú cưng</span></a>
-                    <span class="admin-nav-item is-locked" aria-disabled="true" title="Chức năng chưa khả dụng"><span class="admin-nav-icon" aria-hidden="true">▤</span><span>Đơn hàng</span><span class="admin-lock" aria-label="Chưa khả dụng">🔒</span></span>
+                    <a class="admin-nav-item <%= duongDan.Contains("donhang.aspx") ? "is-active" : "" %>" href="<%= ResolveUrl("~/Admin/DonHang.aspx") %>"><span class="admin-nav-icon" aria-hidden="true">▤</span><span>Đơn hàng</span></a>
                     <span class="admin-nav-item is-locked" aria-disabled="true" title="Chức năng chưa khả dụng"><span class="admin-nav-icon" aria-hidden="true">☆</span><span>Đánh giá</span><span class="admin-lock" aria-label="Chưa khả dụng">🔒</span></span>
                     <span class="admin-nav-label">HỆ THỐNG</span>
                     <% if (laAdmin) { %>
