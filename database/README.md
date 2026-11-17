@@ -65,7 +65,7 @@ WHERE Email = @Email AND HoatDong = 1 AND DaXoa = 0 AND VaiTro <> @VaiTro;
 SELECT Id, Email, VaiTro FROM dbo.TAI_KHOAN WHERE Email = @Email;
 ```
 
-Đăng nhập lại và mở `/Admin/TaiKhoan.aspx` qua HTTPS để quản lý tài khoản. Đăng ký trên website luôn tạo vai trò `khach`. Chỉ admin được vào module tài khoản; khi đổi quyền, khóa, mở khóa hoặc xóa mềm, phiên cũ của tài khoản bị vô hiệu hóa. Không thể khóa, xóa hoặc hạ quyền admin hoạt động cuối cùng.
+Đăng nhập lại và mở `/Admin/TaiKhoan.aspx` để quản lý tài khoản. Đăng ký trên website luôn tạo vai trò `khach`. Chỉ admin được vào module tài khoản; khi đổi quyền, khóa, mở khóa hoặc xóa mềm, phiên cũ của tài khoản bị vô hiệu hóa. Không thể khóa, xóa hoặc hạ quyền admin hoạt động cuối cùng.
 
 Để kiểm tra F05, mở `/Admin/Loai.aspx` hoặc `/Admin/ThuCung.aspx`. Admin được quản lý loài và hồ sơ; staff được xem loài và thêm, sửa, ngừng giới thiệu thú cưng. Chỉ admin được xóa mềm hồ sơ. Không thể xóa loài còn hồ sơ hoặc xóa hồ sơ đang trong đơn hoạt động; trạng thái giữ chỗ và đã bán do đơn hàng quản lý.
 

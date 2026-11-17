@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Web.UI.WebControls;
 
 /// <summary>
-/// Trang đơn hàng của khách: yêu cầu đăng nhập (Global.asax), HTTPS và CSRF như trang tài khoản.
+/// Trang đơn hàng của khách: yêu cầu đăng nhập (Global.asax) và CSRF như trang tài khoản.
 /// </summary>
 public abstract class TrangDonHang : TrangTaiKhoan
 {

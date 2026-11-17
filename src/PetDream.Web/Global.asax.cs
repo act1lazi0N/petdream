@@ -43,20 +43,8 @@ public partial class UngDung : HttpApplication
         bool trangXacThuc = canTaiKhoan || LaTrang(trang, "DangNhap") || LaTrang(trang, "DangKy");
         DanhTinhTaiKhoan taiKhoan = XacThucTaiKhoan.HienTai(Context);
 
-        if (LaTrang(trang, "GioHang") && !Request.IsSecureConnection)
-        {
-            TraLoi(403, "Vui lòng sử dụng kết nối bảo mật HTTPS để mở giỏ hàng.");
-            return;
-        }
-
         if (trangXacThuc || taiKhoan != null)
             Response.Cache.SetNoStore();
-
-        if (trangXacThuc && !Request.IsSecureConnection)
-        {
-            TraLoi(403, "Vui lòng sử dụng kết nối bảo mật HTTPS để truy cập tài khoản.");
-            return;
-        }
 
         if (canTaiKhoan && taiKhoan == null)
         {

@@ -36,7 +36,7 @@ Hồ sơ ngừng bán/xóa mềm không xuất hiện công khai. Chi tiết tr�
 
 `DAO_TAI_KHOAN` gọi procedure trong `005_accounts_procedures.sql`. Email được chuẩn hóa chữ thường, số Việt Nam dạng `+84` được lưu ở dạng 10 chữ số. UNIQUE trong SQL xử lý cả hai lượt đăng ký đồng thời. Đổi mật khẩu cập nhật hash và tăng `PhienBanXacThuc` trong một thao tác có điều kiện.
 
-Forms Authentication dùng cookie HTTPS, HttpOnly, SameSite Lax và thời hạn cố định 30 phút. `Application_PostAuthenticateRequest` kiểm tra ticket, tải danh tính đang hoạt động từ SQL và áp dụng guard trước khi chạy trang. Đăng xuất dùng trang xác nhận POST và xóa cookie trên trình duyệt hiện tại. Đổi mật khẩu, khóa hoặc xóa tài khoản vô hiệu hóa ticket cũ ở request tiếp theo.
+Forms Authentication dùng cookie HttpOnly, SameSite Lax và thời hạn cố định 30 phút. `Application_PostAuthenticateRequest` kiểm tra ticket, tải danh tính đang hoạt động từ SQL và áp dụng guard trước khi chạy trang. Đăng xuất dùng trang xác nhận POST và xóa cookie trên trình duyệt hiện tại. Đổi mật khẩu, khóa hoặc xóa tài khoản vô hiệu hóa ticket cũ ở request tiếp theo.
 
 Trang nghiệp vụ lấy ID qua `XacThucTaiKhoan.HienTai(Context)`. Dùng `LaQuanTri` cho admin/staff và kiểm tra vai trò `admin` cho module chỉ dành cho admin. F06 cần tăng `PhienBanXacThuc` trong cùng thao tác SQL khi đổi quyền, khóa hoặc mở lại tài khoản.
 

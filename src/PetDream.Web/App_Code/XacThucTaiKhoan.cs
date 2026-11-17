@@ -37,7 +37,7 @@ public static class XacThucTaiKhoan
         int id;
         int phienBan;
         FormsAuthenticationTicket ve = danhTinh.Ticket;
-        if (!context.Request.IsSecureConnection || ve.Expired
+        if (ve.Expired
             || !int.TryParse(ve.Name, NumberStyles.None, CultureInfo.InvariantCulture, out id) || id <= 0
             || !int.TryParse(ve.UserData, NumberStyles.None, CultureInfo.InvariantCulture, out phienBan))
         {
@@ -79,7 +79,6 @@ public static class XacThucTaiKhoan
         HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ve))
         {
             HttpOnly = true,
-            Secure = true,
             SameSite = SameSiteMode.Lax,
             Path = FormsAuthentication.FormsCookiePath
         };

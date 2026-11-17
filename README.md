@@ -32,14 +32,9 @@ Yêu cầu Windows, Visual Studio với workload **ASP.NET and web development**
 2. Chuột phải solution → **Restore NuGet Packages**. Cần Internet cho lần tải package đầu tiên.
 3. Mở SSMS hoặc SQL Server Object Explorer trong Visual Studio, kết nối `(localdb)\MSSQLLocalDB` bằng Windows Authentication. Chạy các file theo thứ tự trong [hướng dẫn database](database/README.md). Nếu đã cập nhật đến F07, chạy tiếp 019–021 cho chức năng đánh giá.
 4. Chọn `PetDream.Web` làm **StartUp Project**, chọn `Default.aspx` làm **Start Page** nếu IDE chưa chọn sẵn.
-5. Bật SSL cho `PetDream.Web` trong IIS Express. Nếu Visual Studio chưa sinh URL HTTPS, dừng debug rồi thêm binding bên dưới vào `<bindings>` của site `PetDream.Web` trong `.vs/PetDream/config/applicationhost.config`. Chọn một cổng trống trong dải 44300–44399. [Hướng dẫn SSL của IIS Express](https://learn.microsoft.com/iis/extensions/using-iis-express/running-iis-express-without-administrative-privileges).
-6. Chọn **Build Solution** rồi nhấn **F5** hoặc **Ctrl+F5**. Mở `https://localhost:44387/` theo cổng HTTPS đã cấu hình. Dùng chứng chỉ phát triển của IIS Express cho localhost.
+5. Chọn **Build Solution**, rồi chuột phải `Default.aspx` → **View in Browser** (hoặc nhấn **Ctrl+F5**). Website chạy bằng HTTP tại `http://localhost:8088/`, không cần cấu hình SSL.
 
-```xml
-<binding protocol="https" bindingInformation="*:44387:localhost" />
-```
-
-Trang catalog có thể mở ở cổng HTTP 8088. Tài khoản, giỏ hàng và quản trị yêu cầu HTTPS. Mở một hồ sơ đang tìm chủ, chọn **Thêm vào giỏ**, rồi chọn **Đăng nhập để đặt hàng** từ giỏ, điền địa chỉ và xác nhận đơn COD. Xem lại ở **Tài khoản → Đơn hàng của tôi**. Mở `/DangKy.aspx` để tạo tài khoản khách. Để thử `/Admin/Default.aspx`, tạo tài khoản demo theo [hướng dẫn database](database/README.md).
+Toàn bộ chức năng (catalog, tài khoản, giỏ hàng, quản trị) dùng chung cổng HTTP 8088. Mở một hồ sơ đang tìm chủ, chọn **Thêm vào giỏ**, rồi chọn **Đăng nhập để đặt hàng** từ giỏ, điền địa chỉ và xác nhận đơn COD. Xem lại ở **Tài khoản → Đơn hàng của tôi**. Mở `/DangKy.aspx` để tạo tài khoản khách. Để thử `/Admin/Default.aspx`, tạo tài khoản demo theo [hướng dẫn database](database/README.md).
 
 Nếu IDE không tự restore, vào **Tools → Options → NuGet Package Manager → General** và bật hai tùy chọn cho phép tải package còn thiếu và tự kiểm tra package khi build.
 

@@ -16,7 +16,7 @@
 | Quản trị viên | `demo-admin@petdream.test` | `0810000011` |
 | Nhân viên | `demo-staff@petdream.test` | `0810000012` |
 
-Mở và chạy [SQL chuẩn bị demo](../database/demo/001_prepare_demo.sql) trên LocalDB dành cho buổi chấm. Kết quả trả về ba vai trò và mã đơn mẫu. File thêm riêng hồ sơ **Mây (demo)** cùng một đơn COD đang chờ xác nhận với tổng 620.000 ₫. Khi chạy lại, script trả về cùng đơn và giữ trạng thái hiện tại. Sau khi cấp quyền, đăng nhập lại bằng HTTPS. Mở khách, staff và admin trong các hồ sơ trình duyệt riêng để dùng đồng thời.
+Mở và chạy [SQL chuẩn bị demo](../database/demo/001_prepare_demo.sql) trên LocalDB dành cho buổi chấm. Kết quả trả về ba vai trò và mã đơn mẫu. File thêm riêng hồ sơ **Mây (demo)** cùng một đơn COD đang chờ xác nhận với tổng 620.000 ₫. Khi chạy lại, script trả về cùng đơn và giữ trạng thái hiện tại. Sau khi cấp quyền, đăng nhập lại. Mở khách, staff và admin trong các hồ sơ trình duyệt riêng để dùng đồng thời.
 
 ## Kịch bản trình diễn từ đăng ký đến đánh giá
 
@@ -37,7 +37,7 @@ Mở và chạy [SQL chuẩn bị demo](../database/demo/001_prepare_demo.sql) t
 | ☐ Khách · Chi tiết thú cưng | 0,75 | Xem ảnh, thông tin, trạng thái, gợi ý cùng loài và đánh giá đã duyệt. |
 | ☐ Khách · Giỏ hàng | 0,75 | Thêm hai bé, thử thêm trùng, xóa một bé và đăng nhập để tiếp tục với giỏ hiện tại. |
 | ☐ Khách · Đặt và xem đơn COD | 0,75 | Kiểm tra bố cục checkout, xác nhận đơn và mở chi tiết từ lịch sử. |
-| ☐ Quản trị · Đăng nhập | 0,50 | Staff và admin đăng nhập bằng HTTPS và vào trang tổng quan. |
+| ☐ Quản trị · Đăng nhập | 0,50 | Staff và admin đăng nhập và vào trang tổng quan. |
 | ☐ Quản trị · Phân quyền | 0,25 | So sánh quyền staff và admin, truy cập trực tiếp trang tài khoản bằng staff và trang quản trị bằng khách. |
 | ☐ Quản trị · Loài | 1,00 | Danh sách, thêm, sửa và lưu trữ một loài mới chưa có thú cưng. |
 | ☐ Quản trị · Thú cưng | 1,00 | Danh sách, thêm hồ sơ có ảnh, sửa thông tin và xóa mềm một hồ sơ tự tạo chưa vào đơn. |

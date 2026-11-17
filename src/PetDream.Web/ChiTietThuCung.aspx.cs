@@ -8,11 +8,6 @@ using System.Web;
 
 public partial class ChiTietThuCung : TrangCoCsrf
 {
-    protected override bool BaoVeBieuMau
-    {
-        get { return Request.IsSecureConnection; }
-    }
-
     protected void Page_Load(object sender, EventArgs e)
     {
         if (IsPostBack) return;
@@ -31,7 +26,7 @@ public partial class ChiTietThuCung : TrangCoCsrf
                 return;
             }
             DataRow pet = duLieu.Tables[0].Rows[0];
-            btn_themgio.Visible = Request.IsSecureConnection && DangBan(pet);
+            btn_themgio.Visible = DangBan(pet);
             Title = Convert.ToString(pet["Ten"]) + " | PetDream";
             lit_breadcrumb.Text = lit_ten.Text = Convert.ToString(pet["Ten"]);
             lit_giong.Text = Convert.ToString(pet["Giong"]);
@@ -96,8 +91,8 @@ public partial class ChiTietThuCung : TrangCoCsrf
 
     protected void btn_themgio_Click(object sender, EventArgs e)
     {
-        if (!Request.IsSecureConnection || Request.HttpMethod != "POST")
-            throw new HttpException(403, "Vui lòng mở trang bằng HTTPS để thêm vào giỏ.");
+        if (Request.HttpMethod != "POST")
+            throw new HttpException(405, "Thao tác yêu cầu POST.");
 
         int id;
         if (!DocId(out id))

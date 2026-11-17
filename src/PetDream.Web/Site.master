@@ -20,9 +20,7 @@
                 <a href="<%= ResolveUrl("~/Default.aspx") %>">Trang chủ</a>
                 <a href="<%= ResolveUrl("~/ThuCung.aspx") %>">Thú cưng <span aria-hidden="true">↗</span></a>
                 <a href="<%= ResolveUrl("~/LienHe.aspx") %>">Liên hệ</a>
-                <% if (Request.IsSecureConnection) { %>
-                    <a href="<%= ResolveUrl("~/GioHang.aspx") %>">Giỏ hàng</a>
-                <% } %>
+                <a href="<%= ResolveUrl("~/GioHang.aspx") %>">Giỏ hàng</a>
                 <% if (XacThucTaiKhoan.HienTai(Context) == null) { %>
                     <a href="<%= ResolveUrl("~/DangNhap.aspx") %>">Đăng nhập</a>
                 <% } else { %>
